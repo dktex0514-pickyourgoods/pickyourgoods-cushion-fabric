@@ -1,0 +1,2622 @@
+<!DOCTYPE html>
+<!-- 픽유어굿즈 쿠션 및 패브릭 - 커스텀 에디터 -->
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>픽유어굿즈 - 쿠션/패브릭 주문제작</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&family=Nanum+Gothic:wght@400;700;800&family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Serif+KR:wght@400;700&family=Black+Han+Sans&family=Gothic+A1:wght@400;700;900&family=IBM+Plex+Sans+KR:wght@400;700&family=Do+Hyeon&family=Jua&family=Nanum+Pen+Script&family=Nanum+Brush+Script&family=Gamja+Flower&family=Gugi&family=Hi+Melody&family=Nanum+Gothic+Coding&family=Poor+Story&family=Cute+Font&family=Single+Day&family=Song+Myung&family=Sunflower:wght@300;500;700&family=Yeon+Sung&family=Dokdo&family=East+Sea+Dokdo&family=Gaegu:wght@300;400;700&family=Hahmlet:wght@400;700&family=Maruburi:wght@400;700&family=Orbit&family=Jeju+Gothic&family=Jeju+Hallasan&family=Jeju+Myeongjo&family=Gowun+Dodum&family=Gowun+Batang&display=swap" rel="stylesheet">
+  <style>
+    @font-face { font-family:'나눔스퀘어'; src:url('https://cdn.jsdelivr.net/gh/moonspam/NanumSquare@2.0/NanumSquareR.woff2') format('woff2'); font-weight:400; }
+    @font-face { font-family:'나눔스퀘어라운드'; src:url('https://cdn.jsdelivr.net/gh/moonspam/NanumSquareRound@1.0/NanumSquareRoundR.woff2') format('woff2'); font-weight:400; }
+    @font-face { font-family:'쿠키런'; src:url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2019@1.1/CookieRun-Regular.woff') format('woff'); font-weight:400; }
+    @font-face { font-family:'서울남산체'; src:url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2021_03@1.1/SeoulNamsanM.woff2') format('woff2'); font-weight:400; }
+    @font-face { font-family:'서울한강체'; src:url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2021_03@1.1/SeoulHangangM.woff2') format('woff2'); font-weight:400; }
+    @font-face { font-family:'경기천년바탕'; src:url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2021_04@1.0/GyeonggiThinBatang.woff2') format('woff2'); font-weight:400; }
+    @font-face { font-family:'KoPub바탕체'; src:url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2021_05@1.0/KoPubWorld-BatangLight.woff2') format('woff2'); font-weight:400; }
+    @font-face { font-family:'고양체'; src:url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2106@1.1/GoyangGothic.woff2') format('woff2'); font-weight:400; }
+    @font-face { font-family:'둥근모'; src:url('https://cdn.jsdelivr.net/gh/quiple/galmuri/dist/Galmuri11.woff2') format('woff2'); font-weight:400; }
+    @font-face { font-family:'조선100년체'; src:url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2021_04@1.0/Chosun100Years.woff2') format('woff2'); font-weight:400; }
+    @font-face { font-family:'나눔바른고딕'; src:url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_two@1.0/NanumBarunGothic.woff') format('woff'); font-weight:400; }
+  </style>
+
+  <!-- Fabric.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background: #f0f0f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* ══════════════════════════════════════════
+       VIEW: 상품 선택 화면 vs 에디터 화면
+       ══════════════════════════════════════════ */
+    #view-product-select { display: block; }
+    #view-editor { display: none; }
+    body.editor-mode #view-product-select { display: none; }
+    body.editor-mode #view-editor { display: flex; flex-direction: column; flex: 1; min-height: 100vh; }
+
+    /* ══════════════════════════════════════════
+       상품 선택 화면
+       ══════════════════════════════════════════ */
+    .ps-header {
+      background: #fff;
+      border-bottom: 1px solid #e0e0e0;
+      padding: 20px 0 0;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .ps-header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    .ps-title-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .ps-logo {
+      font-size: 20px;
+      font-weight: 900;
+      color: #111;
+      letter-spacing: -0.5px;
+    }
+    .ps-subtitle {
+      font-size: 13px;
+      color: #888;
+      font-weight: 400;
+    }
+
+    /* 카테고리 탭 */
+    .ps-category-tabs {
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .ps-cat-tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 12px 20px 14px;
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-family: 'Noto Sans KR', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: #777;
+      white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+      flex-shrink: 0;
+    }
+    .ps-cat-tab:hover { color: #333; }
+    .ps-cat-tab.active {
+      color: #111;
+      font-weight: 700;
+      border-bottom-color: #111;
+    }
+    .ps-cat-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      background: #f5f5f5;
+      border: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .ps-cat-tab.active .ps-cat-icon {
+      border-color: #111;
+      background: #fff;
+    }
+
+    /* 상품 그리드 */
+    .ps-body {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 24px;
+      width: 100%;
+    }
+    .ps-count {
+      font-size: 13px;
+      color: #888;
+      margin-bottom: 16px;
+    }
+    .ps-count strong { color: #111; }
+    .ps-sort {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .ps-sort-select {
+      padding: 6px 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 12px;
+      font-family: 'Noto Sans KR', sans-serif;
+      color: #555;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+
+    .product-card {
+      background: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid #f0f0f0;
+    }
+    .product-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      border-color: #e0e0e0;
+    }
+
+    .pc-img-wrap {
+      position: relative;
+      background: #fafafa;
+      padding: 20px;
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .pc-img {
+      max-width: 80%;
+      max-height: 80%;
+      object-fit: contain;
+    }
+    /* 상품 이미지 대체 (SVG placeholder) */
+    .pc-img-placeholder {
+      width: 70%;
+      height: 70%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .pc-badge {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .pc-badge-item {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+    }
+    .pc-badge-item.badge-sale { background: #fee2e2; color: #dc2626; }
+    .pc-badge-item.badge-best { background: #fef3c7; color: #d97706; }
+    .pc-badge-item.badge-new { background: #dbeafe; color: #2563eb; }
+
+    .pc-custom-btn {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 8px 18px;
+      background: #111;
+      color: #fff;
+      border: none;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      font-family: 'Noto Sans KR', sans-serif;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.2s, background 0.15s;
+      white-space: nowrap;
+    }
+    .product-card:hover .pc-custom-btn { opacity: 1; }
+    .pc-custom-btn:hover { background: #333; }
+
+    .pc-info {
+      padding: 14px 16px 18px;
+    }
+    .pc-category {
+      font-size: 11px;
+      color: #aaa;
+      margin-bottom: 4px;
+    }
+    .pc-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: #111;
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }
+    .pc-desc {
+      font-size: 11px;
+      color: #999;
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+    .pc-price-row {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .pc-discount {
+      font-size: 14px;
+      font-weight: 900;
+      color: #dc2626;
+    }
+    .pc-price {
+      font-size: 15px;
+      font-weight: 700;
+      color: #111;
+    }
+    .pc-original {
+      font-size: 12px;
+      color: #bbb;
+      text-decoration: line-through;
+    }
+    .pc-rating {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 6px;
+      font-size: 11px;
+      color: #888;
+    }
+    .pc-stars { color: #f59e0b; font-size: 12px; }
+    .pc-min-order {
+      font-size: 10px;
+      color: #16a34a;
+      margin-top: 4px;
+      font-weight: 500;
+    }
+
+    /* ══════════════════════════════════════════
+       에디터 화면 - 툴바
+       ══════════════════════════════════════════ */
+    .toolbar {
+      background: #fff;
+      border-bottom: 1px solid #e0e0e0;
+      padding: 6px 12px;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      -webkit-overflow-scrolling: touch;
+    }
+    .tool-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      padding: 6px 8px;
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      border-radius: 6px;
+      color: #333;
+      font-size: 10px;
+      font-family: 'Noto Sans KR', sans-serif;
+      transition: background 0.15s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .tool-btn:hover:not(:disabled) { background: #f0f0f0; }
+    .tool-btn:disabled { color: #bbb; cursor: default; }
+    .tool-btn svg { width: 22px; height: 22px; }
+    .tool-btn.btn-active { background: #ede8f8 !important; color: #7c5cbf !important; }
+    .tb-divider { width: 1px; height: 36px; background: #e0e0e0; margin: 0 4px; flex-shrink: 0; }
+
+    /* 뒤로가기 버튼 */
+    .toolbar-back {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border: none;
+      background: none;
+      cursor: pointer;
+      border-radius: 6px;
+      color: #555;
+      font-size: 12px;
+      font-weight: 600;
+      font-family: 'Noto Sans KR', sans-serif;
+      transition: all 0.15s;
+      flex-shrink: 0;
+      margin-right: 4px;
+    }
+    .toolbar-back:hover { background: #f0f0f0; color: #111; }
+    .toolbar-back svg { width: 18px; height: 18px; }
+
+    /* 캔버스 배경색 */
+    .canvas-color-wrap { position: relative; flex-shrink: 0; }
+    .canvas-color-popup {
+      display: none; position: fixed;
+      background: #fff; border-radius: 16px;
+      padding: 14px; box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+      z-index: 450; border: 1px solid #ebebeb;
+    }
+    .canvas-color-popup.visible { display: block; }
+    .ccp-title { font-size: 11px; font-weight: 700; color: #222; text-align: center; margin-bottom: 10px; }
+    .ccp-swatches { display: grid; grid-template-columns: repeat(6, 28px); gap: 7px; }
+    .color-swatch {
+      width: 28px; height: 28px; border-radius: 50%;
+      cursor: pointer; border: 2.5px solid transparent;
+      transition: transform 0.12s, border-color 0.12s;
+    }
+    .color-swatch:hover { transform: scale(1.18); }
+    .color-swatch.selected { border-color: #222; }
+
+    /* ══════════════════════════════════════════
+       에디터 화면 - 메인 레이아웃
+       ══════════════════════════════════════════ */
+    .main-content {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .canvas-area {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 20px;
+      overflow: auto;
+      position: relative;
+    }
+
+    .canvas-outer {
+      position: relative;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.18);
+      background: #fff;
+    }
+    /* 원형 캔버스용 */
+    .canvas-outer.shape-circle {
+      border-radius: 50%;
+      overflow: hidden;
+    }
+    /* 하트 캔버스용 (clip-path) */
+    .canvas-outer.shape-heart {
+      overflow: hidden;
+    }
+
+    /* 드롭존 */
+    #canvas-dropzone {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      cursor: pointer; z-index: 20;
+      transition: background 0.18s;
+    }
+    #canvas-dropzone.hidden { display: none; }
+    #canvas-dropzone.drag-over { background: rgba(124,58,237,0.07); }
+    #canvas-dropzone .dz-icon { color: #ccc; margin-bottom: 14px; }
+    #canvas-dropzone .dz-title {
+      font-size: 15px; font-weight: 600; color: #555;
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+    #canvas-dropzone .dz-sub {
+      font-size: 12px; color: #aaa; margin-top: 6px;
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+
+    /* 블리드 오버레이 */
+    #bleed-overlay {
+      display: none; position: absolute; inset: 0;
+      pointer-events: none; z-index: 5;
+    }
+    /* DPI 배지 */
+    #dpi-badge {
+      position: absolute; z-index: 200; pointer-events: none;
+      display: none; align-items: center; gap: 4px;
+      padding: 3px 9px 3px 7px; border-radius: 20px;
+      font-size: 11px; font-weight: 600; white-space: nowrap;
+      font-family: 'Noto Sans KR', sans-serif;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+    }
+    #dpi-badge.warn { background: #ffebeb; color: #c0000e; border: 1px solid #ffbdbd; }
+
+    /* 스포이드 */
+    .canvas-outer.eyedropper-active canvas { cursor: crosshair !important; }
+    #eyedropper-preview {
+      position: fixed; width: 52px; height: 52px; border-radius: 50%;
+      border: 3px solid #fff; box-shadow: 0 2px 14px rgba(0,0,0,0.38);
+      pointer-events: none; z-index: 9999; display: none;
+      transform: translate(-50%, -145%);
+    }
+    #eyedropper-hint {
+      display: none; position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+      background: rgba(30,30,30,0.82); color: #fff; font-size: 13px; font-weight: 500;
+      padding: 9px 18px; border-radius: 20px; white-space: nowrap;
+      z-index: 55; pointer-events: none;
+    }
+
+    /* 크롭 오버레이 */
+    #crop-overlay {
+      display: none; position: absolute; inset: 0;
+      z-index: 60; user-select: none; touch-action: none;
+    }
+    .crop-dark { position: absolute; background: rgba(0,0,0,0.52); pointer-events: none; }
+    #crop-dark-top { top: 0; left: 0; right: 0; }
+    #crop-dark-bot { left: 0; right: 0; bottom: 0; }
+    #crop-dark-left { left: 0; }
+    #crop-dark-right { right: 0; }
+    #crop-rect {
+      position: absolute; border: 1.5px solid rgba(255,255,255,0.92);
+      box-shadow: 0 0 0 1px rgba(0,0,0,0.35); cursor: move; overflow: visible;
+    }
+    .crop-grid-h { position: absolute; left: 0; right: 0; height: 1px; background: rgba(255,255,255,0.28); pointer-events: none; }
+    .crop-grid-v { position: absolute; top: 0; bottom: 0; width: 1px; background: rgba(255,255,255,0.28); pointer-events: none; }
+    .crop-handle {
+      position: absolute; width: 9px; height: 9px;
+      background: #fff; border: 1px solid rgba(0,0,0,0.45); border-radius: 2px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    }
+    .crop-handle[data-pos="nw"]{ top:-5px; left:-5px; cursor:nw-resize; }
+    .crop-handle[data-pos="n"] { top:-5px; left:calc(50% - 4.5px); cursor:n-resize; }
+    .crop-handle[data-pos="ne"]{ top:-5px; right:-5px; cursor:ne-resize; }
+    .crop-handle[data-pos="e"] { top:calc(50% - 4.5px); right:-5px; cursor:e-resize; }
+    .crop-handle[data-pos="se"]{ bottom:-5px; right:-5px; cursor:se-resize; }
+    .crop-handle[data-pos="s"] { bottom:-5px; left:calc(50% - 4.5px); cursor:s-resize; }
+    .crop-handle[data-pos="sw"]{ bottom:-5px; left:-5px; cursor:sw-resize; }
+    .crop-handle[data-pos="w"] { top:calc(50% - 4.5px); left:-5px; cursor:w-resize; }
+    #crop-actions { position: absolute; display: flex; gap: 7px; z-index: 61; }
+    #crop-cancel-btn {
+      padding: 7px 15px; border: none; border-radius: 7px; font-size: 13px; cursor: pointer;
+      background: rgba(30,30,30,0.72); color: #fff;
+    }
+    #crop-apply-btn {
+      padding: 7px 18px; border: none; border-radius: 7px; font-size: 13px; font-weight: 700;
+      cursor: pointer; background: #7c5cbf; color: #fff;
+    }
+    .canvas-outer.crop-active { cursor: crosshair; }
+
+    /* ══════════════════════════════════════════
+       에디터 - 우측 사이드바
+       ══════════════════════════════════════════ */
+    .right-sidebar {
+      width: 290px; min-width: 290px;
+      border-left: 1px solid #e0e0e0;
+      background: #fff;
+      display: flex; flex-direction: column;
+      padding: 24px 20px;
+      overflow-y: auto;
+    }
+
+    .sidebar-product-info {
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+    .product-tag { font-size: 11px; color: #999; margin-bottom: 5px; }
+    .product-title { font-size: 17px; font-weight: 700; color: #111; line-height: 1.3; }
+
+    .sidebar-label {
+      font-size: 12px; font-weight: 700; color: #777;
+      margin-bottom: 10px; letter-spacing: 0.3px;
+    }
+    .sidebar-divider { height: 1px; background: #f0f0f0; margin: 16px 0; }
+
+    /* 소재 선택 카드 */
+    .material-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 7px;
+      margin-bottom: 4px;
+    }
+    .material-card {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 4px; padding: 10px 6px 9px;
+      border: 1.5px solid #e8e8e8; border-radius: 10px;
+      cursor: pointer; transition: all 0.15s;
+      background: #fafafa; position: relative;
+    }
+    .material-card:hover { border-color: #bbb; background: #f5f5f5; }
+    .material-card.selected { border-color: #222; background: #f5f5f5; }
+    .material-card.selected::after {
+      content: '\2713'; position: absolute; top: 4px; right: 7px;
+      font-size: 9px; color: #222; font-weight: 900;
+    }
+    .material-icon {
+      width: 40px; height: 40px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; background: #eee;
+    }
+    .material-name {
+      font-size: 10.5px; font-weight: 600; color: #555;
+      text-align: center;
+    }
+    .material-card.selected .material-name { color: #111; font-weight: 700; }
+
+    /* 사이즈 선택 */
+    .size-option-list { display: flex; flex-direction: column; gap: 7px; }
+    .size-option {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 14px;
+      border: 1.5px solid #e8e8e8; border-radius: 8px;
+      cursor: pointer; transition: all 0.15s;
+    }
+    .size-option:hover { border-color: #aaa; background: #fafafa; }
+    .size-option.selected { border-color: #222; background: #f5f5f5; }
+    .size-opt-name { font-size: 13px; font-weight: 700; color: #222; }
+    .size-opt-dim { font-size: 11px; color: #888; }
+    .size-opt-price { font-size: 13px; font-weight: 700; color: #111; }
+
+    /* 가격 표시 영역 */
+    .sidebar-price-area {
+      margin-top: auto;
+      padding-top: 20px;
+      border-top: 1px solid #f0f0f0;
+    }
+    .price-row {
+      display: flex; align-items: baseline; justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .price-label { font-size: 12px; color: #888; }
+    .price-original {
+      font-size: 13px; color: #bbb; text-decoration: line-through;
+    }
+    .price-discount-row {
+      display: flex; align-items: baseline; gap: 8px;
+      justify-content: flex-end;
+    }
+    .price-discount-pct { font-size: 16px; font-weight: 900; color: #dc2626; }
+    .price-final { font-size: 20px; font-weight: 900; color: #111; }
+    .price-won { font-size: 14px; font-weight: 700; color: #111; }
+
+    .send-btn {
+      width: 100%; padding: 14px;
+      background: #111; color: #fff;
+      border: none; border-radius: 9px;
+      font-size: 15px; font-family: 'Noto Sans KR', sans-serif;
+      font-weight: 700; cursor: pointer;
+      transition: background 0.15s; margin-top: 12px;
+    }
+    .send-btn:hover { background: #333; }
+    .send-btn:disabled { background: #ccc; cursor: default; }
+
+    /* ══════════════════════════════════════════
+       사이드 패널 (이미지 업로드, 텍스트, AI)
+       ══════════════════════════════════════════ */
+    .side-panel {
+      display: none; position: fixed;
+      right: 0; top: 0; bottom: 0;
+      width: 280px; background: #fff;
+      border-left: 1px solid #e0e0e0;
+      padding: 56px 18px 18px;
+      overflow-y: auto; z-index: 50;
+    }
+    .side-panel.open { display: block; }
+    .panel-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding-top: 26px; margin-bottom: 16px;
+    }
+    .panel-title { font-size: 14px; font-weight: 700; }
+    .panel-close { font-size: 22px; color: #888; cursor: pointer; }
+
+    /* 업로드 */
+    .upload-box {
+      border: 2px dashed #ccc; border-radius: 10px;
+      padding: 28px 16px; text-align: center;
+      cursor: pointer; transition: border-color 0.2s, background 0.2s;
+    }
+    .upload-box:hover { border-color: #7c3aed; background: #faf5ff; }
+    .upload-box p { font-size: 13px; color: #555; margin-top: 10px; }
+    .upload-box small { font-size: 11px; color: #aaa; }
+    #file-input { display: none; }
+
+    /* 텍스트 패널 */
+    .section-label { font-size: 11px; color: #777; margin-bottom: 6px; font-weight: 700; }
+    .font-picker { position: relative; margin-bottom: 14px; }
+    .font-picker-btn {
+      width: 100%; padding: 9px 10px;
+      border: 1px solid #ddd; border-radius: 7px;
+      font-size: 15px; cursor: pointer;
+      display: flex; align-items: center; justify-content: space-between;
+      background: #fff; outline: none;
+    }
+    .font-picker-btn:hover { border-color: #333; }
+    .font-picker-list {
+      display: none; position: absolute; top: calc(100% + 3px); left: 0; right: 0; z-index: 2000;
+      background: #fff; border: 1px solid #ddd; border-radius: 8px;
+      max-height: 300px; overflow-y: auto;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.13);
+    }
+    .font-picker.open .font-picker-list { display: block; }
+    .font-opt { padding: 10px 14px; font-size: 16px; cursor: pointer; color: #222; }
+    .font-opt:hover { background: #f5f5f5; }
+    .font-opt.selected { background: #f0f0f0; font-weight: 700; }
+
+    .fmt-row { display: flex; gap: 4px; margin-bottom: 14px; flex-wrap: wrap; }
+    .fmt-btn {
+      width: 32px; height: 32px;
+      border: 1px solid #ddd; background: #fff; border-radius: 5px;
+      cursor: pointer; font-size: 14px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .fmt-btn:hover { background: #f5f5f5; }
+    .fmt-btn.active { background: #efefef; border-color: #888; }
+
+    .color-palette {
+      display: grid; grid-template-columns: repeat(10, 1fr);
+      gap: 5px; margin-bottom: 16px;
+    }
+    .c-dot {
+      aspect-ratio: 1; border-radius: 50%; cursor: pointer;
+      border: 2px solid transparent; transition: transform 0.1s;
+    }
+    .c-dot:hover { transform: scale(1.15); }
+    .c-dot.selected { border-color: #222 !important; }
+
+    .add-text-btn {
+      width: 100%; padding: 11px;
+      background: #222; color: #fff;
+      border: none; border-radius: 8px;
+      font-size: 14px; font-family: 'Noto Sans KR', sans-serif;
+      font-weight: 700; cursor: pointer;
+    }
+    .add-text-btn:hover { background: #444; }
+
+    /* AI 가이드 패널 */
+    .ai-panel-content { padding: 0 2px; }
+    .ai-style-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+      margin-bottom: 16px;
+    }
+    .ai-style-card {
+      padding: 12px 8px; border: 1.5px solid #e8e8e8;
+      border-radius: 10px; text-align: center;
+      cursor: pointer; transition: all 0.15s;
+      background: #fafafa;
+    }
+    .ai-style-card:hover { border-color: #bbb; background: #f5f5f5; }
+    .ai-style-card.selected { border-color: #7c3aed; background: #faf5ff; }
+    .ai-style-emoji { font-size: 26px; margin-bottom: 4px; }
+    .ai-style-name { font-size: 11px; font-weight: 600; color: #555; }
+
+    .ai-transform-btn {
+      width: 100%; padding: 12px;
+      background: linear-gradient(135deg, #7c3aed, #c026d3);
+      color: #fff; border: none; border-radius: 9px;
+      font-size: 14px; font-family: 'Noto Sans KR', sans-serif;
+      font-weight: 700; cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .ai-transform-btn:hover { opacity: 0.88; }
+    .ai-transform-btn:disabled { opacity: 0.5; cursor: default; }
+
+    .ai-remove-bg-btn {
+      width: 100%; padding: 11px;
+      background: #fff; color: #111;
+      border: 1.5px solid #ccc; border-radius: 9px;
+      font-size: 14px; font-family: 'Noto Sans KR', sans-serif;
+      font-weight: 600; cursor: pointer;
+      margin-top: 8px; transition: all 0.15s;
+    }
+    .ai-remove-bg-btn:hover { border-color: #111; }
+    .ai-remove-bg-btn:disabled { opacity: 0.5; cursor: default; }
+
+    /* ══════════════════════════════════════════
+       모달
+       ══════════════════════════════════════════ */
+    .modal-bg {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.52); z-index: 500;
+      align-items: center; justify-content: center;
+    }
+    .modal-bg.visible { display: flex; }
+    .modal-box {
+      background: #fff; border-radius: 14px;
+      padding: 26px 24px; max-width: 420px; width: 90%;
+      box-shadow: 0 24px 72px rgba(0,0,0,0.38);
+    }
+    .modal-title {
+      font-size: 16px; font-weight: 700; color: #111;
+      margin-bottom: 16px; text-align: center;
+    }
+    .modal-input {
+      width: 100%; padding: 10px 12px;
+      border: 1.5px solid #e0e0e0; border-radius: 8px;
+      font-size: 14px; font-family: 'Noto Sans KR', sans-serif;
+      margin-bottom: 10px; outline: none;
+      transition: border-color 0.15s;
+    }
+    .modal-input:focus { border-color: #222; }
+    .modal-input::placeholder { color: #bbb; }
+    .modal-submit {
+      width: 100%; padding: 13px;
+      background: #111; color: #fff;
+      border: none; border-radius: 9px;
+      font-size: 15px; font-weight: 700;
+      font-family: 'Noto Sans KR', sans-serif;
+      cursor: pointer; margin-top: 6px;
+    }
+    .modal-submit:hover { background: #333; }
+    .modal-cancel {
+      width: 100%; padding: 10px;
+      background: #f0f0f0; color: #444;
+      border: none; border-radius: 8px;
+      font-size: 13px; font-weight: 600;
+      font-family: 'Noto Sans KR', sans-serif;
+      cursor: pointer; margin-top: 8px;
+    }
+
+    /* 커스텀 alert */
+    .alert-modal .modal-box { text-align: center; }
+    .alert-msg {
+      font-size: 14px; color: #333; line-height: 1.7;
+      margin-bottom: 18px; white-space: pre-line;
+    }
+    .alert-ok {
+      padding: 10px 32px; background: #111; color: #fff;
+      border: none; border-radius: 8px; font-size: 14px;
+      font-weight: 700; cursor: pointer;
+    }
+
+    /* 로딩 오버레이 */
+    .loading-bg {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.6); z-index: 999;
+      align-items: center; justify-content: center;
+      flex-direction: column; gap: 16px;
+    }
+    .loading-bg.visible { display: flex; }
+    .loading-spinner {
+      width: 44px; height: 44px;
+      border: 3px solid rgba(255,255,255,0.3);
+      border-top-color: #fff; border-radius: 50%;
+      animation: spin 0.75s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text { color: #fff; font-size: 15px; font-weight: 600; }
+
+    /* ══════════════════════════════════════════
+       반응형
+       ══════════════════════════════════════════ */
+    @media (max-width: 1024px) {
+      .product-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .product-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .ps-body { padding: 16px; }
+      .pc-info { padding: 10px 12px 14px; }
+      .pc-name { font-size: 13px; }
+    }
+    @media (max-width: 680px) {
+      .right-sidebar {
+        position: fixed; bottom: 0; left: 0; right: 0;
+        width: 100%; min-width: unset;
+        border-left: none; border-top: 1px solid #e0e0e0;
+        border-radius: 16px 16px 0 0;
+        max-height: 55vh; padding: 16px 18px;
+        z-index: 50;
+      }
+      .side-panel {
+        top: auto; right: 0; left: 0; width: 100%;
+        border-left: none; border-top: 1px solid #e0e0e0;
+        border-radius: 16px 16px 0 0;
+        max-height: 65vh; padding: 16px 18px;
+      }
+      .canvas-area { padding: 16px 12px; }
+    }
+    @media (max-width: 480px) {
+      .product-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .ps-cat-tab { padding: 10px 14px 12px; font-size: 12px; }
+      .ps-cat-icon { width: 44px; height: 44px; font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════════════
+     VIEW 1: 상품 선택 화면
+     ════════════════════════════════════════════════════════════ -->
+<div id="view-product-select">
+
+  <!-- 헤더 + 카테고리 탭 -->
+  <div class="ps-header">
+    <div class="ps-header-inner">
+      <div class="ps-title-row">
+        <span class="ps-logo">픽유어굿즈</span>
+        <span class="ps-subtitle">쿠션 &middot; 패브릭 커스텀 제작</span>
+      </div>
+      <div class="ps-category-tabs" id="category-tabs">
+        <button class="ps-cat-tab active" data-cat="all">
+          <div class="ps-cat-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          </div>
+          전체 상품
+        </button>
+        <button class="ps-cat-tab" data-cat="cushion">
+          <div class="ps-cat-icon">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.3"><rect x="4" y="6" width="16" height="12" rx="3"/><path d="M4 10c-1.5 0-2 1-2 2s.5 2 2 2"/><path d="M20 10c1.5 0 2 1 2 2s-.5 2-2 2"/></svg>
+          </div>
+          쿠션/방석
+        </button>
+        <button class="ps-cat-tab" data-cat="fabric">
+          <div class="ps-cat-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.5"><rect x="3" y="2" width="14" height="20" rx="1"/><path d="M7 2v20"/><circle cx="10" cy="8" r="2"/><path d="M7 14l3-3 4 4 3-2"/></svg>
+          </div>
+          패브릭/커버
+        </button>
+        <button class="ps-cat-tab" data-cat="blanket">
+          <div class="ps-cat-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 14h20"/><path d="M6 4v10"/><path d="M18 4v10"/></svg>
+          </div>
+          담요/블랭킷
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 상품 목록 -->
+  <div class="ps-body">
+    <div class="ps-sort">
+      <div class="ps-count">총 <strong id="product-count">8</strong>개의 상품</div>
+      <select class="ps-sort-select" id="sort-select">
+        <option value="recommend">추천순</option>
+        <option value="price-low">낮은 가격순</option>
+        <option value="price-high">높은 가격순</option>
+      </select>
+    </div>
+    <div class="product-grid" id="product-grid">
+      <!-- JS에서 동적 생성 -->
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════════════════
+     VIEW 2: 에디터 화면
+     ════════════════════════════════════════════════════════════ -->
+<div id="view-editor">
+
+  <!-- 툴바 -->
+  <div class="toolbar">
+    <button class="toolbar-back" id="btn-back" title="상품 선택으로 돌아가기">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>
+      돌아가기
+    </button>
+    <div class="tb-divider"></div>
+
+    <div class="img-upload-wrap">
+      <button class="tool-btn" id="btn-upload">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+        </svg>
+        이미지 업로드
+      </button>
+    </div>
+
+    <button class="tool-btn" id="btn-text">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round">
+        <rect x="3.5" y="3.5" width="17" height="17" rx="1"/>
+        <path d="M9 10h6M12 10v5" stroke-width="2"/>
+      </svg>
+      텍스트
+    </button>
+
+    <!-- 캔버스 배경색 -->
+    <div class="canvas-color-wrap" id="canvas-color-wrap">
+      <button class="tool-btn" id="btn-canvas-color">
+        <svg viewBox="0 0 26 18" width="26" height="18" style="margin:0 auto 2px;">
+          <rect x="0" y="0" width="26" height="18" rx="2" fill="#C4A47C"/>
+          <rect id="canvas-color-inner" x="2.5" y="2.5" width="21" height="13" fill="#FFFFFF"/>
+        </svg>
+        배경색
+      </button>
+      <div class="canvas-color-popup" id="canvas-color-popup">
+        <div class="ccp-title">캔버스 배경색 선택</div>
+        <div class="ccp-swatches">
+          <div class="color-swatch selected" data-color="none" style="background:#fff;border-color:#d0d0d0" title="없음"></div>
+          <div class="color-swatch" data-color="#F5F5F5" style="background:#F5F5F5;border-color:#e0e0e0" title="연회색"></div>
+          <div class="color-swatch" data-color="#9E9E9E" style="background:#9E9E9E" title="회색"></div>
+          <div class="color-swatch" data-color="#424242" style="background:#424242" title="진회색"></div>
+          <div class="color-swatch" data-color="#000000" style="background:#000000" title="검정"></div>
+          <div class="color-swatch" data-color="#FFF8E1" style="background:#FFF8E1;border-color:#e0e0e0" title="크림"></div>
+          <div class="color-swatch" data-color="#FCE4EC" style="background:#FCE4EC;border-color:#e0e0e0" title="연핑크"></div>
+          <div class="color-swatch" data-color="#F48FB1" style="background:#F48FB1" title="핑크"></div>
+          <div class="color-swatch" data-color="#E91E63" style="background:#E91E63" title="핫핑크"></div>
+          <div class="color-swatch" data-color="#F44336" style="background:#F44336" title="빨강"></div>
+          <div class="color-swatch" data-color="#795548" style="background:#795548" title="브라운"></div>
+          <div class="color-swatch" data-color="#FFC107" style="background:#FFC107" title="노랑"></div>
+          <div class="color-swatch" data-color="#FF9800" style="background:#FF9800" title="주황"></div>
+          <div class="color-swatch" data-color="#4CAF50" style="background:#4CAF50" title="초록"></div>
+          <div class="color-swatch" data-color="#2196F3" style="background:#2196F3" title="파랑"></div>
+          <div class="color-swatch" data-color="#1A237E" style="background:#1A237E" title="남색"></div>
+          <div class="color-swatch" data-color="#7B1FA2" style="background:#7B1FA2" title="보라"></div>
+          <div class="color-swatch" data-color="#673AB7" style="background:#673AB7" title="진보라"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tb-divider"></div>
+
+    <button class="tool-btn" id="btn-undo" disabled title="되돌리기 (Ctrl+Z)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+      되돌리기
+    </button>
+    <button class="tool-btn" id="btn-redo" disabled title="다시 실행 (Ctrl+Y)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.13-9.36L23 10"/></svg>
+      다시 실행
+    </button>
+
+    <div class="tb-divider"></div>
+
+    <button class="tool-btn" id="btn-flip-h" disabled title="좌우 반전">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M12 3v18"/><polyline points="16 7 20 12 16 17"/><polyline points="8 7 4 12 8 17"/></svg>
+      좌우반전
+    </button>
+    <button class="tool-btn" id="btn-flip-v" disabled title="상하 반전">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M3 12h18"/><polyline points="7 8 12 4 17 8"/><polyline points="7 16 12 20 17 16"/></svg>
+      상하반전
+    </button>
+
+    <div class="tb-divider"></div>
+
+    <button class="tool-btn" id="btn-front" disabled title="맨 앞으로">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="8" y="2" width="14" height="14" rx="1.5" fill="#e8e8e8"/><rect x="2" y="8" width="14" height="14" rx="1.5" fill="#fff"/></svg>
+      맨 앞으로
+    </button>
+    <button class="tool-btn" id="btn-back-layer" disabled title="맨 뒤로">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="2" y="8" width="14" height="14" rx="1.5" fill="#e8e8e8"/><rect x="8" y="2" width="14" height="14" rx="1.5" fill="#fff"/></svg>
+      맨 뒤로
+    </button>
+    <button class="tool-btn" id="btn-delete" disabled title="삭제">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+      삭제
+    </button>
+
+    <div class="tb-divider"></div>
+
+    <button class="tool-btn" id="btn-crop" disabled title="자르기">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M6.13 1L6 16a2 2 0 0 0 2 2h15"/><path d="M1 6.13L16 6a2 2 0 0 1 2 2v15"/></svg>
+      자르기
+    </button>
+
+    <div class="tb-divider"></div>
+
+    <button class="tool-btn" id="btn-ai-guide" title="AI 이미지 변환">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9.5 2l1.2 3.3L14 6.5l-3.3 1.2L9.5 11l-1.2-3.3L5 6.5l3.3-1.2z"/>
+        <path d="M19 12l.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/>
+      </svg>
+      AI 꾸미기
+    </button>
+  </div>
+
+  <!-- 메인 콘텐츠 -->
+  <div class="main-content">
+    <!-- 캔버스 영역 -->
+    <div class="canvas-area">
+      <div class="canvas-outer" id="canvas-outer">
+        <canvas id="c"></canvas>
+        <div id="canvas-dropzone">
+          <svg class="dz-icon" width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+            <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+          </svg>
+          <p class="dz-title">이미지를 드래그하거나 클릭하여 업로드 하세요</p>
+          <p class="dz-sub">JPG, PNG 파일을 지원합니다</p>
+        </div>
+        <div id="bleed-overlay"></div>
+        <div id="dpi-badge"><span id="dpi-badge-icon"></span><span id="dpi-badge-text"></span></div>
+        <div id="eyedropper-hint"></div>
+        <!-- 크롭 오버레이 -->
+        <div id="crop-overlay">
+          <div class="crop-dark" id="crop-dark-top"></div>
+          <div class="crop-dark" id="crop-dark-bot"></div>
+          <div class="crop-dark" id="crop-dark-left"></div>
+          <div class="crop-dark" id="crop-dark-right"></div>
+          <div id="crop-rect">
+            <div class="crop-grid-h" style="top:33.33%"></div>
+            <div class="crop-grid-h" style="top:66.66%"></div>
+            <div class="crop-grid-v" style="left:33.33%"></div>
+            <div class="crop-grid-v" style="left:66.66%"></div>
+            <div class="crop-handle" data-pos="nw"></div><div class="crop-handle" data-pos="n"></div>
+            <div class="crop-handle" data-pos="ne"></div><div class="crop-handle" data-pos="e"></div>
+            <div class="crop-handle" data-pos="se"></div><div class="crop-handle" data-pos="s"></div>
+            <div class="crop-handle" data-pos="sw"></div><div class="crop-handle" data-pos="w"></div>
+          </div>
+          <div id="crop-actions">
+            <button id="crop-cancel-btn">✕ 취소</button>
+            <button id="crop-apply-btn">✓ 자르기 적용</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 우측 사이드바 -->
+    <div class="right-sidebar" id="right-sidebar">
+      <div class="sidebar-product-info">
+        <div class="product-tag" id="sb-product-tag">쿠션/방석</div>
+        <div class="product-title" id="sb-product-title">벨보아 모던 쿠션</div>
+      </div>
+
+      <!-- 소재 선택 -->
+      <div class="sidebar-label">소재 선택</div>
+      <div class="material-grid" id="material-grid">
+        <!-- JS에서 동적 생성 -->
+      </div>
+
+      <div class="sidebar-divider"></div>
+
+      <!-- 사이즈 선택 -->
+      <div class="sidebar-label">사이즈 선택</div>
+      <div class="size-option-list" id="size-list">
+        <!-- JS에서 동적 생성 -->
+      </div>
+
+      <!-- 하단 가격 + 주문 -->
+      <div class="sidebar-price-area">
+        <div class="price-row">
+          <span class="price-label">정가</span>
+          <span class="price-original" id="price-original">26,000원</span>
+        </div>
+        <div class="price-row" style="margin-bottom:0;">
+          <span class="price-label">판매가</span>
+          <div class="price-discount-row">
+            <span class="price-discount-pct" id="price-discount-pct">17%</span>
+            <span class="price-final" id="price-final">21,500</span>
+            <span class="price-won">원</span>
+          </div>
+        </div>
+        <button class="send-btn" id="btn-order">주문하기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 이미지 업로드 패널 -->
+  <div class="side-panel" id="panel-upload">
+    <div class="panel-header">
+      <span class="panel-title">이미지 업로드</span>
+      <span class="panel-close" id="close-upload">&times;</span>
+    </div>
+    <p style="color:#7c3aed;font-size:12.5px;font-weight:700;margin-bottom:14px;line-height:1.55;">
+      고해상도 이미지를 사용하면 더 선명하게 인쇄됩니다.
+    </p>
+    <div class="upload-box" id="upload-box">
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#bbb" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      <p>클릭하거나 드래그하여 이미지를 업로드하세요</p>
+      <small>JPG, PNG 지원 (최대 10MB)</small>
+    </div>
+    <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp">
+  </div>
+
+  <!-- 텍스트 패널 -->
+  <div class="side-panel" id="panel-text">
+    <div class="panel-header">
+      <span class="panel-title">텍스트 추가</span>
+      <span class="panel-close" id="close-text">&times;</span>
+    </div>
+    <div class="section-label">서체 선택</div>
+    <div class="font-picker" id="font-picker">
+      <div class="font-picker-btn" id="font-picker-btn">
+        <span id="font-picker-label" style="font-family:'Noto Sans KR'">Noto Sans KR</span>
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="#888" stroke-width="2" stroke-linecap="round"><path d="M3 4.5l3 3 3-3"/></svg>
+      </div>
+      <div class="font-picker-list" id="font-picker-list"></div>
+    </div>
+    <div class="section-label">글자 크기 &middot; 스타일</div>
+    <div class="fmt-row">
+      <input type="number" id="font-size-input" value="24" min="8" max="200" style="width:60px;padding:6px 8px;border:1px solid #ddd;border-radius:5px;font-size:13px;text-align:center;">
+      <button class="fmt-btn" id="fmt-bold" title="굵게">B</button>
+    </div>
+    <div class="section-label">글자 색상</div>
+    <div class="color-palette" id="text-color-palette"></div>
+    <button class="add-text-btn" id="add-text-btn">텍스트 추가</button>
+  </div>
+
+  <!-- AI 가이드 패널 -->
+  <div class="side-panel" id="panel-ai">
+    <div class="panel-header">
+      <span class="panel-title">AI 이미지 꾸미기</span>
+      <span class="panel-close" id="close-ai">&times;</span>
+    </div>
+    <div class="ai-panel-content">
+      <div class="section-label">스타일 선택</div>
+      <div class="ai-style-grid" id="ai-style-grid"></div>
+      <button class="ai-transform-btn" id="btn-ai-transform" disabled>AI 스타일 변환</button>
+      <button class="ai-remove-bg-btn" id="btn-remove-bg" disabled>배경 제거 (누끼따기)</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── 주문 모달 ── -->
+<div class="modal-bg" id="order-modal">
+  <div class="modal-box">
+    <div class="modal-title">주문 정보 입력</div>
+    <input class="modal-input" id="order-name" type="text" placeholder="이름" maxlength="20">
+    <input class="modal-input" id="order-phone" type="tel" placeholder="연락처 (예: 010-1234-5678)" maxlength="20">
+    <input class="modal-input" id="order-email" type="email" placeholder="이메일">
+    <button class="modal-submit" id="order-submit">주문 제출</button>
+    <button class="modal-cancel" id="order-cancel">취소</button>
+  </div>
+</div>
+
+<!-- 알림 모달 -->
+<div class="modal-bg alert-modal" id="alert-modal">
+  <div class="modal-box">
+    <p class="alert-msg" id="alert-msg"></p>
+    <button class="alert-ok" id="alert-ok">확인</button>
+  </div>
+</div>
+
+<!-- 로딩 오버레이 -->
+<div class="loading-bg" id="loading-overlay">
+  <div class="loading-spinner"></div>
+  <div class="loading-text" id="loading-text">처리 중...</div>
+</div>
+
+<!-- 스포이드 프리뷰 -->
+<div id="eyedropper-preview"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// 설정
+// ═══════════════════════════════════════════════════════════════
+const GAS_URL = 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE';
+const _GT = 'pyg-cushion-2026-k8m3n';
+
+// ═══════════════════════════════════════════════════════════════
+// 상품 데이터
+// ═══════════════════════════════════════════════════════════════
+const MATERIALS = {
+  velboa:  { name: '벨보아', icon: '🧸', desc: '부드러운 극세사 소재' },
+  velvet:  { name: '벨벳',  icon: '✨', desc: '고급스러운 벨벳 소재' },
+  satin:   { name: '사틴',  icon: '🌟', desc: '매끄러운 광택 소재' },
+  canvas:  { name: '캔버스', icon: '🎨', desc: '자연스러운 면 소재' },
+  suede:   { name: '스웨이드', icon: '🫧', desc: '은은한 질감의 소재' },
+};
+
+const PRODUCTS = [
+  // ── 쿠션/방석 ──
+  {
+    id: 'cushion_modern',
+    name: '모던 쿠션',
+    category: 'cushion',
+    categoryLabel: '쿠션/방석',
+    shape: 'square',
+    desc: '정사각형 쿠션으로 어디든 잘 어울립니다',
+    badge: ['badge-best'],
+    materials: ['velboa','velvet','satin','canvas','suede'],
+    sizes: [
+      { label: 'M', dim: '40 × 40 cm', w: 40, h: 40 },
+      { label: 'L', dim: '50 × 50 cm', w: 50, h: 50 },
+    ],
+    prices: {
+      velboa:  { M: { orig: 26000, sale: 21500 }, L: { orig: 33000, sale: 26500 } },
+      velvet:  { M: { orig: 27000, sale: 21000 }, L: { orig: 34000, sale: 28000 } },
+      satin:   { M: { orig: 24000, sale: 19500 }, L: { orig: 29950, sale: 24000 } },
+      canvas:  { M: { orig: 26000, sale: 20500 }, L: { orig: 33000, sale: 26500 } },
+      suede:   { M: { orig: 27000, sale: 21500 }, L: { orig: 34000, sale: 27500 } },
+    },
+    rating: 4.95,
+    reviews: 110,
+    svgPlaceholder: '<rect x="2" y="2" width="20" height="20" rx="2" fill="#f0e6d6" stroke="#d4c4a8" stroke-width="0.5"/>',
+  },
+  {
+    id: 'cushion_horizontal',
+    name: '가로 쿠션',
+    category: 'cushion',
+    categoryLabel: '쿠션/방석',
+    shape: 'landscape',
+    desc: '와이드한 직사각형 쿠션',
+    badge: [],
+    materials: ['velboa','velvet','satin','canvas','suede'],
+    sizes: [
+      { label: 'M', dim: '50 × 30 cm', w: 50, h: 30 },
+      { label: 'L', dim: '60 × 40 cm', w: 60, h: 40 },
+    ],
+    prices: {
+      velboa:  { M: { orig: 26000, sale: 21500 }, L: { orig: 33000, sale: 26500 } },
+      velvet:  { M: { orig: 27000, sale: 21000 }, L: { orig: 34000, sale: 28000 } },
+      satin:   { M: { orig: 24000, sale: 19500 }, L: { orig: 29950, sale: 24000 } },
+      canvas:  { M: { orig: 26000, sale: 20500 }, L: { orig: 33000, sale: 26500 } },
+      suede:   { M: { orig: 27000, sale: 21500 }, L: { orig: 34000, sale: 27500 } },
+    },
+    rating: 5.0,
+    reviews: 41,
+    svgPlaceholder: '<rect x="1" y="4" width="22" height="16" rx="2" fill="#f0e6d6" stroke="#d4c4a8" stroke-width="0.5"/>',
+  },
+  {
+    id: 'cushion_round',
+    name: '라운드 쿠션 (원형)',
+    category: 'cushion',
+    categoryLabel: '쿠션/방석',
+    shape: 'circle',
+    desc: '부드러운 원형 쿠션',
+    badge: ['badge-best'],
+    materials: ['velboa','velvet'],
+    sizes: [
+      { label: 'ONE', dim: '지름 40 cm', w: 40, h: 40 },
+    ],
+    prices: {
+      velboa: { ONE: { orig: 26000, sale: 21500 } },
+      velvet: { ONE: { orig: 29000, sale: 22500 } },
+    },
+    rating: 4.97,
+    reviews: 326,
+    svgPlaceholder: '<circle cx="12" cy="12" r="10" fill="#f0e6d6" stroke="#d4c4a8" stroke-width="0.5"/>',
+  },
+  {
+    id: 'cushion_heart',
+    name: '하트 쿠션',
+    category: 'cushion',
+    categoryLabel: '쿠션/방석',
+    shape: 'heart',
+    desc: '사랑스러운 하트 모양 쿠션',
+    badge: [],
+    materials: ['satin','velboa'],
+    sizes: [
+      { label: 'ONE', dim: '약 40 × 35 cm', w: 40, h: 35 },
+    ],
+    prices: {
+      satin:  { ONE: { orig: 24000, sale: 19500 } },
+      velboa: { ONE: { orig: 26000, sale: 21500 } },
+    },
+    rating: 4.96,
+    reviews: 50,
+    svgPlaceholder: '<path d="M12 21s-7-5.5-9-9.5C1 7 4 3 7.5 5L12 9l4.5-4C20 3 23 7 21 11.5c-2 4-9 9.5-9 9.5z" fill="#fce4ec" stroke="#f48fb1" stroke-width="0.5"/>',
+  },
+
+  // ── 패브릭/커버 ──
+  {
+    id: 'fabric_poster_v',
+    name: '세로 패브릭 포스터',
+    category: 'fabric',
+    categoryLabel: '패브릭/커버',
+    shape: 'portrait',
+    desc: '벽에 거는 세로형 패브릭 포스터',
+    badge: ['badge-best'],
+    materials: [],
+    sizes: [
+      { label: '45×65', dim: '45 × 65 cm', w: 45, h: 65 },
+      { label: '70×110', dim: '70 × 110 cm', w: 70, h: 110 },
+    ],
+    prices: {
+      _default: { '45×65': { orig: 16900, sale: 14200 }, '70×110': { orig: 19900, sale: 16720 } },
+    },
+    rating: 4.95,
+    reviews: 263,
+    svgPlaceholder: '<rect x="5" y="2" width="14" height="20" rx="1" fill="#e8f5e9" stroke="#a5d6a7" stroke-width="0.5"/><line x1="5" y1="3" x2="19" y2="3" stroke="#c8e6c9" stroke-width="0.3"/>',
+  },
+  {
+    id: 'fabric_poster_h',
+    name: '가로 패브릭 포스터',
+    category: 'fabric',
+    categoryLabel: '패브릭/커버',
+    shape: 'landscape',
+    desc: '벽에 거는 가로형 패브릭 포스터',
+    badge: [],
+    materials: [],
+    sizes: [
+      { label: '65×45', dim: '65 × 45 cm', w: 65, h: 45 },
+      { label: '110×70', dim: '110 × 70 cm', w: 110, h: 70 },
+    ],
+    prices: {
+      _default: { '65×45': { orig: 16900, sale: 14200 }, '110×70': { orig: 19900, sale: 16720 } },
+    },
+    rating: 4.98,
+    reviews: 50,
+    svgPlaceholder: '<rect x="2" y="5" width="20" height="14" rx="1" fill="#e8f5e9" stroke="#a5d6a7" stroke-width="0.5"/>',
+  },
+
+  // ── 담요/블랭킷 ──
+  {
+    id: 'blanket_wool_h',
+    name: '가로 양모 담요',
+    category: 'blanket',
+    categoryLabel: '담요/블랭킷',
+    shape: 'landscape',
+    desc: '따뜻하고 포근한 양모 담요',
+    badge: ['badge-best'],
+    materials: [],
+    sizes: [
+      { label: 'S', dim: '70 × 100 cm', w: 100, h: 70 },
+      { label: 'M', dim: '100 × 150 cm', w: 150, h: 100 },
+      { label: 'L', dim: '150 × 200 cm', w: 200, h: 150 },
+    ],
+    prices: {
+      _default: { S: { orig: 17000, sale: 14500 }, M: { orig: 27000, sale: 22500 }, L: { orig: 41000, sale: 33000 } },
+    },
+    rating: 4.93,
+    reviews: 550,
+    svgPlaceholder: '<rect x="1" y="4" width="22" height="16" rx="2" fill="#e3f2fd" stroke="#90caf9" stroke-width="0.5"/><path d="M1 17h22" stroke="#bbdefb" stroke-width="0.3"/>',
+  },
+  {
+    id: 'blanket_wool_v',
+    name: '세로 양모 담요',
+    category: 'blanket',
+    categoryLabel: '담요/블랭킷',
+    shape: 'portrait',
+    desc: '따뜻하고 포근한 세로형 양모 담요',
+    badge: [],
+    materials: [],
+    sizes: [
+      { label: 'S', dim: '100 × 70 cm', w: 70, h: 100 },
+      { label: 'M', dim: '150 × 100 cm', w: 100, h: 150 },
+      { label: 'L', dim: '200 × 150 cm', w: 150, h: 200 },
+    ],
+    prices: {
+      _default: { S: { orig: 17000, sale: 14500 }, M: { orig: 27000, sale: 22500 }, L: { orig: 41000, sale: 33000 } },
+    },
+    rating: 5.0,
+    reviews: 48,
+    svgPlaceholder: '<rect x="4" y="1" width="16" height="22" rx="2" fill="#e3f2fd" stroke="#90caf9" stroke-width="0.5"/>',
+  },
+];
+
+// ═══════════════════════════════════════════════════════════════
+// 상태 관리
+// ═══════════════════════════════════════════════════════════════
+let currentProduct = null;
+let currentMaterial = null;
+let currentSizeIdx = 0;
+let currentSizeW = 40;
+let currentSizeH = 40;
+let canvas = null;
+let undoStack = [];
+let redoStack = [];
+let saveTimeout = null;
+let isSubmitting = false; // 주문 이중 제출 방지
+let editorEventCleanups = []; // 이벤트 리스너 정리용
+
+// ═══════════════════════════════════════════════════════════════
+// 유틸리티
+// ═══════════════════════════════════════════════════════════════
+function fmt(n) { return n.toLocaleString('ko-KR'); }
+function discountPct(orig, sale) { return Math.round((1 - sale / orig) * 100); }
+
+function showAlert(msg) {
+  document.getElementById('alert-msg').textContent = msg;
+  document.getElementById('alert-modal').classList.add('visible');
+}
+document.getElementById('alert-ok').onclick = () => {
+  document.getElementById('alert-modal').classList.remove('visible');
+};
+
+function showLoading(text) {
+  document.getElementById('loading-text').textContent = text || '처리 중...';
+  document.getElementById('loading-overlay').classList.add('visible');
+}
+function hideLoading() {
+  document.getElementById('loading-overlay').classList.remove('visible');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 상품 선택 화면
+// ═══════════════════════════════════════════════════════════════
+let activeCategory = 'all';
+
+function getDefaultPrice(product) {
+  const mats = product.materials;
+  const mat = mats.length > 0 ? mats[0] : '_default';
+  const sizeLabel = product.sizes[0].label;
+  const priceData = product.prices[mat];
+  return priceData ? priceData[sizeLabel] : null;
+}
+
+function renderProductGrid(category) {
+  const grid = document.getElementById('product-grid');
+  let filtered = PRODUCTS;
+  if (category && category !== 'all') {
+    filtered = PRODUCTS.filter(p => p.category === category);
+  }
+
+  // 정렬
+  const sortVal = document.getElementById('sort-select').value;
+  if (sortVal === 'price-low') {
+    filtered = [...filtered].sort((a, b) => {
+      const pa = getDefaultPrice(a);
+      const pb = getDefaultPrice(b);
+      return (pa ? pa.sale : 0) - (pb ? pb.sale : 0);
+    });
+  } else if (sortVal === 'price-high') {
+    filtered = [...filtered].sort((a, b) => {
+      const pa = getDefaultPrice(a);
+      const pb = getDefaultPrice(b);
+      return (pb ? pb.sale : 0) - (pa ? pa.sale : 0);
+    });
+  }
+
+  document.getElementById('product-count').textContent = filtered.length;
+
+  grid.innerHTML = filtered.map(p => {
+    const price = getDefaultPrice(p);
+    const pct = price ? discountPct(price.orig, price.sale) : 0;
+    const stars = '★'.repeat(Math.round(p.rating));
+    const badges = p.badge.map(b => {
+      const label = b === 'badge-best' ? 'BEST' : b === 'badge-new' ? 'NEW' : 'SALE';
+      return `<span class="pc-badge-item ${b}">${label}</span>`;
+    }).join('');
+
+    return `
+      <div class="product-card" data-id="${p.id}">
+        <div class="pc-img-wrap">
+          ${badges ? `<div class="pc-badge">${badges}</div>` : ''}
+          <div class="pc-img-placeholder">
+            <svg viewBox="0 0 24 24" width="80" height="80">${p.svgPlaceholder}</svg>
+          </div>
+          <button class="pc-custom-btn" onclick="event.stopPropagation(); openEditor('${p.id}')">커스텀하기</button>
+        </div>
+        <div class="pc-info">
+          <div class="pc-category">${p.categoryLabel}</div>
+          <div class="pc-name">${p.name}</div>
+          <div class="pc-desc">${p.desc}</div>
+          ${price ? `
+            <div class="pc-price-row">
+              <span class="pc-discount">${pct}%</span>
+              <span class="pc-price">${fmt(price.sale)}원</span>
+              <span class="pc-original">${fmt(price.orig)}원</span>
+            </div>
+          ` : ''}
+          <div class="pc-rating">
+            <span class="pc-stars">${stars}</span>
+            <span>${p.rating}</span>
+            <span>(${p.reviews})</span>
+          </div>
+          <div class="pc-min-order">단 1개도 주문 가능</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  // 카드 클릭 이벤트
+  grid.querySelectorAll('.product-card').forEach(card => {
+    card.addEventListener('click', () => openEditor(card.dataset.id));
+  });
+}
+
+// 카테고리 탭 이벤트
+document.getElementById('category-tabs').addEventListener('click', e => {
+  const tab = e.target.closest('.ps-cat-tab');
+  if (!tab) return;
+  document.querySelectorAll('.ps-cat-tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  activeCategory = tab.dataset.cat;
+  renderProductGrid(activeCategory);
+});
+
+// 정렬 변경
+document.getElementById('sort-select').addEventListener('change', () => {
+  renderProductGrid(activeCategory);
+});
+
+// 초기 렌더
+renderProductGrid('all');
+
+// ═══════════════════════════════════════════════════════════════
+// 에디터 열기/닫기
+// ═══════════════════════════════════════════════════════════════
+function openEditor(productId) {
+  currentProduct = PRODUCTS.find(p => p.id === productId);
+  if (!currentProduct) return;
+
+  // 기본 소재 선택
+  currentMaterial = currentProduct.materials.length > 0 ? currentProduct.materials[0] : '_default';
+  currentSizeIdx = 0;
+
+  document.body.classList.add('editor-mode');
+
+  // 사이드바 업데이트
+  document.getElementById('sb-product-tag').textContent = currentProduct.categoryLabel;
+  document.getElementById('sb-product-title').textContent = currentProduct.name;
+
+  renderMaterials();
+  renderSizes();
+  updatePrice();
+  initCanvas();
+
+  window.scrollTo(0, 0);
+}
+
+function closeEditor() {
+  // saveTimeout 정리 (race condition 방지)
+  if (saveTimeout) { clearTimeout(saveTimeout); saveTimeout = null; }
+
+  document.body.classList.remove('editor-mode');
+  if (canvas) {
+    // clear 전에 이벤트 제거 (object:removed → saveState 연쇄 방지)
+    canvas.off();
+    canvas.clear();
+    canvas.dispose();
+    canvas = null;
+  }
+  // 등록된 이벤트 리스너 정리 (메모리 누수 방지)
+  editorEventCleanups.forEach(fn => fn());
+  editorEventCleanups = [];
+
+  // 크롭 모드 해제
+  const overlay = document.getElementById('crop-overlay');
+  if (overlay) overlay.style.display = 'none';
+  const outer = document.getElementById('canvas-outer');
+  if (outer) { outer.classList.remove('crop-active'); outer.style.clipPath = ''; }
+
+  // 드롭존 다시 표시
+  const dz = document.getElementById('canvas-dropzone');
+  if (dz) dz.classList.remove('hidden');
+  // 패널 닫기
+  document.querySelectorAll('.side-panel').forEach(p => p.classList.remove('open'));
+  // DPI 배지 숨기기
+  const badge = document.getElementById('dpi-badge');
+  if (badge) badge.style.display = 'none';
+
+  undoStack = [];
+  redoStack = [];
+  isSubmitting = false;
+}
+
+document.getElementById('btn-back').addEventListener('click', closeEditor);
+
+// ═══════════════════════════════════════════════════════════════
+// 소재 선택
+// ═══════════════════════════════════════════════════════════════
+function renderMaterials() {
+  const grid = document.getElementById('material-grid');
+  if (currentProduct.materials.length === 0) {
+    grid.innerHTML = '<div style="font-size:12px;color:#999;padding:8px 0;">이 상품은 단일 소재입니다.</div>';
+    return;
+  }
+  grid.innerHTML = currentProduct.materials.map(matId => {
+    const mat = MATERIALS[matId];
+    const sel = matId === currentMaterial ? 'selected' : '';
+    return `
+      <div class="material-card ${sel}" data-mat="${matId}">
+        <div class="material-icon">${mat.icon}</div>
+        <div class="material-name">${mat.name}</div>
+      </div>
+    `;
+  }).join('');
+
+  grid.querySelectorAll('.material-card').forEach(card => {
+    card.addEventListener('click', () => {
+      currentMaterial = card.dataset.mat;
+      renderMaterials();
+      renderSizes();
+      updatePrice();
+    });
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 사이즈 선택
+// ═══════════════════════════════════════════════════════════════
+function renderSizes() {
+  const list = document.getElementById('size-list');
+  const priceData = currentProduct.prices[currentMaterial] || currentProduct.prices._default || {};
+
+  list.innerHTML = currentProduct.sizes.map((sz, i) => {
+    const sel = i === currentSizeIdx ? 'selected' : '';
+    const price = priceData[sz.label];
+    return `
+      <div class="size-option ${sel}" data-idx="${i}">
+        <div>
+          <div class="size-opt-name">${sz.label}</div>
+          <div class="size-opt-dim">${sz.dim}</div>
+        </div>
+        ${price ? `<div class="size-opt-price">${fmt(price.sale)}원</div>` : ''}
+      </div>
+    `;
+  }).join('');
+
+  list.querySelectorAll('.size-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      currentSizeIdx = parseInt(opt.dataset.idx);
+      renderSizes();
+      updatePrice();
+      resizeCanvas();
+    });
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 가격 업데이트
+// ═══════════════════════════════════════════════════════════════
+function updatePrice() {
+  const sz = currentProduct.sizes[currentSizeIdx];
+  const priceData = currentProduct.prices[currentMaterial] || currentProduct.prices._default || {};
+  const price = priceData[sz.label];
+  if (!price) return;
+
+  const pct = discountPct(price.orig, price.sale);
+  document.getElementById('price-original').textContent = fmt(price.orig) + '원';
+  document.getElementById('price-discount-pct').textContent = pct + '%';
+  document.getElementById('price-final').textContent = fmt(price.sale);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 캔버스 초기화 및 리사이즈
+// ═══════════════════════════════════════════════════════════════
+function initCanvas() {
+  const sz = currentProduct.sizes[currentSizeIdx];
+  currentSizeW = sz.w;
+  currentSizeH = sz.h;
+
+  const { cw, ch } = calcCanvasPx(sz.w, sz.h);
+
+  if (canvas) {
+    canvas.clear();
+    canvas.dispose();
+  }
+
+  canvas = new fabric.Canvas('c', {
+    width: cw,
+    height: ch,
+    backgroundColor: '#ffffff',
+    preserveObjectStacking: true,
+  });
+
+  // 선택 핸들 스타일
+  fabric.Object.prototype.set({
+    borderColor: '#000000',
+    cornerColor: '#000000',
+    cornerStrokeColor: '#000000',
+    cornerSize: 14,
+    cornerStyle: 'rect',
+    transparentCorners: false,
+    borderScaleFactor: 1.5,
+  });
+
+  const outer = document.getElementById('canvas-outer');
+  outer.style.width = cw + 'px';
+  outer.style.height = ch + 'px';
+
+  // 모양에 따른 클리핑
+  applyShapeClip(cw, ch);
+
+  // 캔버스 이벤트
+  setupCanvasEvents();
+
+  // 드롭존
+  document.getElementById('canvas-dropzone').classList.remove('hidden');
+
+  // 블리드 오버레이
+  updateBleed(cw, ch);
+
+  // 초기 상태 저장 (undo 기능 정상 작동을 위해)
+  saveInitialState();
+}
+
+function calcCanvasPx(wCm, hCm) {
+  const sidebarW = window.innerWidth > 680 ? 290 : 0;
+  const maxW = Math.min(window.innerWidth - 64 - sidebarW, 700);
+  const maxH = Math.round((window.innerHeight || 700) - 140);
+  const ratio = hCm / wCm;
+
+  let cw = maxW;
+  let ch = Math.round(cw * ratio);
+  if (ch > maxH) {
+    ch = maxH;
+    cw = Math.round(ch / ratio);
+  }
+  cw = Math.max(cw, 200);
+  ch = Math.max(ch, 200);
+  return { cw, ch };
+}
+
+function resizeCanvas() {
+  if (!canvas || !currentProduct) return;
+  const sz = currentProduct.sizes[currentSizeIdx];
+  currentSizeW = sz.w;
+  currentSizeH = sz.h;
+
+  const { cw, ch } = calcCanvasPx(sz.w, sz.h);
+  const outer = document.getElementById('canvas-outer');
+
+  canvas.setWidth(cw);
+  canvas.setHeight(ch);
+  outer.style.width = cw + 'px';
+  outer.style.height = ch + 'px';
+
+  applyShapeClip(cw, ch);
+  updateBleed(cw, ch);
+  canvas.renderAll();
+}
+
+function applyShapeClip(cw, ch) {
+  const outer = document.getElementById('canvas-outer');
+  outer.className = 'canvas-outer';
+
+  if (currentProduct.shape === 'circle') {
+    outer.classList.add('shape-circle');
+    canvas.clipPath = new fabric.Circle({
+      radius: Math.min(cw, ch) / 2,
+      originX: 'center',
+      originY: 'center',
+      left: cw / 2,
+      top: ch / 2,
+      absolutePositioned: true,
+    });
+  } else if (currentProduct.shape === 'heart') {
+    outer.classList.add('shape-heart');
+    // 하트 SVG path
+    const heartPath = 'M 12 21.35 C 12 21.35 2 14.35 2 8.5 C 2 5.42 4.42 3 7.5 3 C 9.24 3 10.91 3.81 12 5.09 C 13.09 3.81 14.76 3 16.5 3 C 19.58 3 22 5.42 22 8.5 C 22 14.35 12 21.35 12 21.35 Z';
+    const scaleX = cw / 24;
+    const scaleY = ch / 24;
+    canvas.clipPath = new fabric.Path(heartPath, {
+      scaleX: scaleX,
+      scaleY: scaleY,
+      originX: 'left',
+      originY: 'top',
+      left: 0,
+      top: 0,
+      absolutePositioned: true,
+      fill: 'transparent',
+    });
+    // heart shape via CSS clip-path
+    outer.style.clipPath = "path('M " + (cw/2) + " " + (ch*0.92) +
+      " C " + (cw/2) + " " + (ch*0.92) + " " + (cw*0.083) + " " + (ch*0.6) +
+      " " + (cw*0.083) + " " + (ch*0.35) +
+      " C " + (cw*0.083) + " " + (ch*0.225) + " " + (cw*0.183) + " " + (ch*0.125) +
+      " " + (cw*0.3125) + " " + (ch*0.125) +
+      " C " + (cw*0.385) + " " + (ch*0.125) + " " + (cw*0.455) + " " + (ch*0.159) +
+      " " + (cw/2) + " " + (ch*0.212) +
+      " C " + (cw*0.545) + " " + (ch*0.159) + " " + (cw*0.615) + " " + (ch*0.125) +
+      " " + (cw*0.6875) + " " + (ch*0.125) +
+      " C " + (cw*0.817) + " " + (ch*0.125) + " " + (cw*0.917) + " " + (ch*0.225) +
+      " " + (cw*0.917) + " " + (ch*0.35) +
+      " C " + (cw*0.917) + " " + (ch*0.6) + " " + (cw/2) + " " + (ch*0.92) +
+      " " + (cw/2) + " " + (ch*0.92) + " Z')";
+  } else {
+    canvas.clipPath = null;
+    outer.style.clipPath = '';
+  }
+}
+
+function updateBleed(cw, ch) {
+  const overlay = document.getElementById('bleed-overlay');
+  if (currentProduct.shape === 'circle' || currentProduct.shape === 'heart') {
+    overlay.style.display = 'none';
+    return;
+  }
+  // 블리드 여백 표시 (인쇄 안전 영역)
+  const bleed = Math.round(Math.min(cw, ch) * 0.05);
+  overlay.style.display = 'block';
+  overlay.innerHTML = `
+    <svg width="${cw}" height="${ch}" style="position:absolute;top:0;left:0;">
+      <rect x="${bleed}" y="${bleed}" width="${cw - bleed*2}" height="${ch - bleed*2}"
+        fill="none" stroke="#ff4444" stroke-width="1" stroke-dasharray="4,3" opacity="0.5"/>
+    </svg>
+  `;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 캔버스 이벤트
+// ═══════════════════════════════════════════════════════════════
+function setupCanvasEvents() {
+  canvas.on('object:added', saveState);
+  canvas.on('object:modified', saveState);
+  canvas.on('object:removed', saveState);
+
+  canvas.on('selection:created', updateToolbarState);
+  canvas.on('selection:updated', updateToolbarState);
+  canvas.on('selection:cleared', updateToolbarState);
+
+  // 드롭존 클릭
+  const dropzone = document.getElementById('canvas-dropzone');
+  const dzClick = () => { document.getElementById('file-input').click(); };
+  dropzone.addEventListener('click', dzClick);
+  editorEventCleanups.push(() => dropzone.removeEventListener('click', dzClick));
+
+  // 드래그앤드롭
+  const outer = document.getElementById('canvas-outer');
+  const onDragOver = e => { e.preventDefault(); dropzone.classList.add('drag-over'); };
+  const onDragLeave = () => dropzone.classList.remove('drag-over');
+  const onDrop = e => {
+    e.preventDefault();
+    dropzone.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file && (file.type === 'image/jpeg' || file.type === 'image/png' || file.type === 'image/webp')) {
+      loadImageFile(file);
+    }
+  };
+  outer.addEventListener('dragover', onDragOver);
+  outer.addEventListener('dragleave', onDragLeave);
+  outer.addEventListener('drop', onDrop);
+  editorEventCleanups.push(() => {
+    outer.removeEventListener('dragover', onDragOver);
+    outer.removeEventListener('dragleave', onDragLeave);
+    outer.removeEventListener('drop', onDrop);
+  });
+
+  // 키보드 단축키
+  const onKeydown = e => {
+    if (!canvas || !document.body.classList.contains('editor-mode')) return;
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+    if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); undo(); }
+    if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.shiftKey && e.key === 'z'))) { e.preventDefault(); redo(); }
+    if (e.key === 'Delete' || e.key === 'Backspace') {
+      const obj = canvas ? canvas.getActiveObject() : null;
+      if (obj) { e.preventDefault(); canvas.remove(obj); canvas.discardActiveObject(); canvas.renderAll(); }
+    }
+  };
+  document.addEventListener('keydown', onKeydown);
+  editorEventCleanups.push(() => document.removeEventListener('keydown', onKeydown));
+}
+
+function updateToolbarState() {
+  const obj = canvas ? canvas.getActiveObject() : null;
+  const has = !!obj;
+  document.getElementById('btn-flip-h').disabled = !has;
+  document.getElementById('btn-flip-v').disabled = !has;
+  document.getElementById('btn-front').disabled = !has;
+  document.getElementById('btn-back-layer').disabled = !has;
+  document.getElementById('btn-delete').disabled = !has;
+  document.getElementById('btn-crop').disabled = !(has && obj.type === 'image');
+
+  const hasAny = canvas && canvas.getObjects().length > 0;
+  document.getElementById('btn-ai-transform').disabled = !(has && obj.type === 'image');
+  document.getElementById('btn-remove-bg').disabled = !(has && obj.type === 'image');
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 이미지 로드
+// ═══════════════════════════════════════════════════════════════
+document.getElementById('file-input').addEventListener('change', e => {
+  const file = e.target.files[0];
+  if (file) loadImageFile(file);
+  e.target.value = '';
+});
+
+function loadImageFile(file) {
+  if (file.size > 10 * 1024 * 1024) {
+    showAlert('파일 크기가 10MB를 초과합니다.');
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = ev => {
+    fabric.Image.fromURL(ev.target.result, img => {
+      // 캔버스에 맞게 스케일
+      const scale = Math.min(
+        (canvas.width * 0.9) / img.width,
+        (canvas.height * 0.9) / img.height,
+        1
+      );
+      img.set({
+        scaleX: scale,
+        scaleY: scale,
+        left: canvas.width / 2,
+        top: canvas.height / 2,
+        originX: 'center',
+        originY: 'center',
+      });
+      canvas.add(img);
+      canvas.setActiveObject(img);
+      canvas.renderAll();
+
+      // 드롭존 숨기기
+      document.getElementById('canvas-dropzone').classList.add('hidden');
+      // 패널 닫기
+      document.getElementById('panel-upload').classList.remove('open');
+
+      // DPI 체크
+      checkDPI(img);
+    });
+  };
+  reader.readAsDataURL(file);
+}
+
+function checkDPI(img) {
+  const sz = currentProduct.sizes[currentSizeIdx];
+  const printW = sz.w; // cm
+  const printH = sz.h; // cm
+  const imgW = img.width;
+  const imgH = img.height;
+  // DPI = pixels / (cm / 2.54) = pixels * 2.54 / cm
+  const dpiW = (imgW * 2.54) / printW;
+  const dpiH = (imgH * 2.54) / printH;
+  const dpi = Math.min(dpiW, dpiH);
+
+  const badge = document.getElementById('dpi-badge');
+  if (dpi < 150) {
+    badge.className = 'warn';
+    badge.style.display = 'flex';
+    document.getElementById('dpi-badge-icon').textContent = '⚠';
+    document.getElementById('dpi-badge-text').textContent = `해상도 낮음 (${Math.round(dpi)} DPI)`;
+    badge.style.top = '8px';
+    badge.style.right = '8px';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// Undo / Redo
+// ═══════════════════════════════════════════════════════════════
+function saveState() {
+  if (saveTimeout) clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(() => {
+    if (!canvas) return; // canvas가 dispose된 후 호출 방지
+    undoStack.push(canvas.toJSON());
+    if (undoStack.length > 30) undoStack.shift();
+    redoStack = [];
+    document.getElementById('btn-undo').disabled = undoStack.length <= 1;
+    document.getElementById('btn-redo').disabled = true;
+  }, 100);
+}
+
+function undo() {
+  if (!canvas || undoStack.length <= 1) return;
+  if (saveTimeout) { clearTimeout(saveTimeout); saveTimeout = null; }
+  redoStack.push(undoStack.pop());
+  const state = undoStack[undoStack.length - 1];
+  canvas.loadFromJSON(state, () => {
+    canvas.renderAll();
+    document.getElementById('btn-undo').disabled = undoStack.length <= 1;
+    document.getElementById('btn-redo').disabled = false;
+  });
+}
+
+function redo() {
+  if (!canvas || redoStack.length === 0) return;
+  if (saveTimeout) { clearTimeout(saveTimeout); saveTimeout = null; }
+  const state = redoStack.pop();
+  undoStack.push(state);
+  canvas.loadFromJSON(state, () => {
+    canvas.renderAll();
+    document.getElementById('btn-undo').disabled = undoStack.length <= 1;
+    document.getElementById('btn-redo').disabled = redoStack.length === 0;
+  });
+}
+
+// 초기 상태 저장
+function saveInitialState() {
+  undoStack = [canvas.toJSON()];
+  redoStack = [];
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 툴바 버튼 이벤트
+// ═══════════════════════════════════════════════════════════════
+// 이미지 업로드 패널
+document.getElementById('btn-upload').addEventListener('click', () => {
+  closeAllPanels();
+  document.getElementById('panel-upload').classList.add('open');
+});
+document.getElementById('close-upload').addEventListener('click', () => {
+  document.getElementById('panel-upload').classList.remove('open');
+});
+document.getElementById('upload-box').addEventListener('click', () => {
+  document.getElementById('file-input').click();
+});
+
+// 텍스트 패널
+document.getElementById('btn-text').addEventListener('click', () => {
+  closeAllPanels();
+  document.getElementById('panel-text').classList.add('open');
+});
+document.getElementById('close-text').addEventListener('click', () => {
+  document.getElementById('panel-text').classList.remove('open');
+});
+
+// AI 패널
+document.getElementById('btn-ai-guide').addEventListener('click', () => {
+  closeAllPanels();
+  document.getElementById('panel-ai').classList.add('open');
+});
+document.getElementById('close-ai').addEventListener('click', () => {
+  document.getElementById('panel-ai').classList.remove('open');
+});
+
+function closeAllPanels() {
+  document.querySelectorAll('.side-panel').forEach(p => p.classList.remove('open'));
+}
+
+// Undo / Redo
+document.getElementById('btn-undo').addEventListener('click', undo);
+document.getElementById('btn-redo').addEventListener('click', redo);
+
+// 좌우/상하 반전
+document.getElementById('btn-flip-h').addEventListener('click', () => {
+  if (!canvas) return;
+  const obj = canvas.getActiveObject();
+  if (obj) { obj.set('flipX', !obj.flipX); canvas.renderAll(); saveState(); }
+});
+document.getElementById('btn-flip-v').addEventListener('click', () => {
+  if (!canvas) return;
+  const obj = canvas.getActiveObject();
+  if (obj) { obj.set('flipY', !obj.flipY); canvas.renderAll(); saveState(); }
+});
+
+// 레이어 순서
+document.getElementById('btn-front').addEventListener('click', () => {
+  if (!canvas) return;
+  const obj = canvas.getActiveObject();
+  if (obj) { canvas.bringToFront(obj); canvas.renderAll(); saveState(); }
+});
+document.getElementById('btn-back-layer').addEventListener('click', () => {
+  if (!canvas) return;
+  const obj = canvas.getActiveObject();
+  if (obj) { canvas.sendToBack(obj); canvas.renderAll(); saveState(); }
+});
+
+// 삭제
+document.getElementById('btn-delete').addEventListener('click', () => {
+  if (!canvas) return;
+  const obj = canvas.getActiveObject();
+  if (obj) {
+    canvas.remove(obj);
+    canvas.discardActiveObject();
+    canvas.renderAll();
+    if (canvas.getObjects().length === 0) {
+      document.getElementById('canvas-dropzone').classList.remove('hidden');
+      document.getElementById('dpi-badge').style.display = 'none';
+    }
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════
+// 배경색
+// ═══════════════════════════════════════════════════════════════
+document.getElementById('btn-canvas-color').addEventListener('click', e => {
+  const popup = document.getElementById('canvas-color-popup');
+  const rect = e.currentTarget.getBoundingClientRect();
+  popup.style.top = (rect.bottom + 8) + 'px';
+  popup.style.left = rect.left + 'px';
+  popup.classList.toggle('visible');
+});
+
+document.getElementById('canvas-color-popup').addEventListener('click', e => {
+  const swatch = e.target.closest('.color-swatch');
+  if (!swatch) return;
+  const color = swatch.dataset.color;
+  document.querySelectorAll('#canvas-color-popup .color-swatch').forEach(s => s.classList.remove('selected'));
+  swatch.classList.add('selected');
+  if (canvas) {
+    canvas.backgroundColor = color === 'none' ? '#ffffff' : color;
+    canvas.renderAll();
+    saveState();
+  }
+  document.getElementById('canvas-color-inner').setAttribute('fill', color === 'none' ? '#FFFFFF' : color);
+  document.getElementById('canvas-color-popup').classList.remove('visible');
+});
+
+// 팝업 및 폰트피커 외부 클릭 닫기
+document.addEventListener('click', e => {
+  const popup = document.getElementById('canvas-color-popup');
+  if (popup.classList.contains('visible') && !e.target.closest('#canvas-color-wrap')) {
+    popup.classList.remove('visible');
+  }
+  // 폰트 피커 외부 클릭 닫기
+  const fontPicker = document.getElementById('font-picker');
+  if (fontPicker.classList.contains('open') && !e.target.closest('#font-picker')) {
+    fontPicker.classList.remove('open');
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════
+// 텍스트 기능
+// ═══════════════════════════════════════════════════════════════
+const FONT_LIST = [
+  'Noto Sans KR','Nanum Gothic','나눔스퀘어','나눔스퀘어라운드','나눔바른고딕',
+  'Noto Serif KR','Nanum Myeongjo','경기천년바탕','KoPub바탕체','Gowun Batang',
+  'Black Han Sans','Gothic A1','Do Hyeon','Jua','Orbit',
+  'Nanum Pen Script','Nanum Brush Script','Gamja Flower','Hi Melody','Cute Font',
+  'Dokdo','East Sea Dokdo','Gaegu','Poor Story','Yeon Sung',
+  '쿠키런','서울남산체','서울한강체','고양체','둥근모','조선100년체',
+  'Jeju Gothic','Jeju Hallasan','Jeju Myeongjo',
+  'Gowun Dodum','Hahmlet','Maruburi','Sunflower',
+];
+
+let selectedFont = 'Noto Sans KR';
+let selectedTextColor = '#111111';
+let isBold = false;
+
+// 폰트 목록 생성
+const fontListEl = document.getElementById('font-picker-list');
+FONT_LIST.forEach(f => {
+  const opt = document.createElement('div');
+  opt.className = 'font-opt' + (f === selectedFont ? ' selected' : '');
+  opt.style.fontFamily = `'${f}'`;
+  opt.textContent = f;
+  opt.addEventListener('click', () => {
+    selectedFont = f;
+    document.getElementById('font-picker-label').textContent = f;
+    document.getElementById('font-picker-label').style.fontFamily = `'${f}'`;
+    fontListEl.querySelectorAll('.font-opt').forEach(o => o.classList.remove('selected'));
+    opt.classList.add('selected');
+    document.getElementById('font-picker').classList.remove('open');
+    // 선택된 텍스트 폰트 변경
+    const active = canvas ? canvas.getActiveObject() : null;
+    if (active && active.type === 'i-text') {
+      active.set('fontFamily', f);
+      canvas.renderAll();
+      saveState();
+    }
+  });
+  fontListEl.appendChild(opt);
+});
+
+document.getElementById('font-picker-btn').addEventListener('click', () => {
+  document.getElementById('font-picker').classList.toggle('open');
+});
+
+// 색상 팔레트
+const TEXT_COLORS = [
+  '#111111','#555555','#999999','#ffffff',
+  '#dc2626','#f97316','#facc15','#16a34a',
+  '#2563eb','#7c3aed','#ec4899','#795548',
+  '#00bcd4','#1a237e','#e91e63','#ff5722',
+  '#8bc34a','#009688','#673ab7','#607d8b',
+];
+
+const textPalette = document.getElementById('text-color-palette');
+TEXT_COLORS.forEach(c => {
+  const dot = document.createElement('div');
+  dot.className = 'c-dot' + (c === selectedTextColor ? ' selected' : '');
+  dot.style.background = c;
+  if (c === '#ffffff') dot.style.borderColor = '#ddd';
+  dot.addEventListener('click', () => {
+    selectedTextColor = c;
+    textPalette.querySelectorAll('.c-dot').forEach(d => d.classList.remove('selected'));
+    dot.classList.add('selected');
+    const active = canvas ? canvas.getActiveObject() : null;
+    if (active && active.type === 'i-text') {
+      active.set('fill', c);
+      canvas.renderAll();
+      saveState();
+    }
+  });
+  textPalette.appendChild(dot);
+});
+
+// Bold
+document.getElementById('fmt-bold').addEventListener('click', () => {
+  isBold = !isBold;
+  document.getElementById('fmt-bold').classList.toggle('active', isBold);
+  const active = canvas ? canvas.getActiveObject() : null;
+  if (active && active.type === 'i-text') {
+    active.set('fontWeight', isBold ? 'bold' : 'normal');
+    canvas.renderAll();
+    saveState();
+  }
+});
+
+// 글자 크기
+document.getElementById('font-size-input').addEventListener('change', e => {
+  const size = parseInt(e.target.value) || 24;
+  const active = canvas ? canvas.getActiveObject() : null;
+  if (active && active.type === 'i-text') {
+    active.set('fontSize', size);
+    canvas.renderAll();
+    saveState();
+  }
+});
+
+// 텍스트 추가
+document.getElementById('add-text-btn').addEventListener('click', () => {
+  if (!canvas) return;
+  const text = new fabric.IText('텍스트 입력', {
+    left: canvas.width / 2,
+    top: canvas.height / 2,
+    originX: 'center',
+    originY: 'center',
+    fontFamily: selectedFont,
+    fontSize: parseInt(document.getElementById('font-size-input').value) || 24,
+    fill: selectedTextColor,
+    fontWeight: isBold ? 'bold' : 'normal',
+  });
+  canvas.add(text);
+  canvas.setActiveObject(text);
+  canvas.renderAll();
+  document.getElementById('canvas-dropzone').classList.add('hidden');
+  document.getElementById('panel-text').classList.remove('open');
+});
+
+// ═══════════════════════════════════════════════════════════════
+// 자르기 (크롭)
+// ═══════════════════════════════════════════════════════════════
+let cropState = null;
+
+document.getElementById('btn-crop').addEventListener('click', () => {
+  const obj = canvas.getActiveObject();
+  if (!obj || obj.type !== 'image') return;
+  startCrop(obj);
+});
+
+function startCrop(imgObj) {
+  canvas.discardActiveObject();
+  canvas.renderAll();
+  const outer = document.getElementById('canvas-outer');
+  outer.classList.add('crop-active');
+
+  const overlay = document.getElementById('crop-overlay');
+  overlay.style.display = 'block';
+
+  const cw = canvas.width;
+  const ch = canvas.height;
+  const margin = Math.min(cw, ch) * 0.1;
+
+  const rect = document.getElementById('crop-rect');
+  let cx = margin, cy = margin;
+  let rw = cw - margin * 2, rh = ch - margin * 2;
+
+  rect.style.left = cx + 'px';
+  rect.style.top = cy + 'px';
+  rect.style.width = rw + 'px';
+  rect.style.height = rh + 'px';
+
+  updateCropDarks(cx, cy, rw, rh, cw, ch);
+
+  const actions = document.getElementById('crop-actions');
+  actions.style.bottom = '12px';
+  actions.style.left = '50%';
+  actions.style.transform = 'translateX(-50%)';
+
+  cropState = { imgObj, cx, cy, rw, rh };
+
+  // 핸들 드래그
+  let dragType = null;
+  let startX, startY, startRect;
+
+  function onPointerDown(e) {
+    const handle = e.target.closest('.crop-handle');
+    if (handle) {
+      dragType = handle.dataset.pos;
+    } else if (e.target === rect || e.target.closest('#crop-rect')) {
+      dragType = 'move';
+    } else return;
+    startX = e.clientX;
+    startY = e.clientY;
+    startRect = { cx: cropState.cx, cy: cropState.cy, rw: cropState.rw, rh: cropState.rh };
+    document.addEventListener('pointermove', onPointerMove);
+    document.addEventListener('pointerup', onPointerUp);
+  }
+
+  function onPointerMove(e) {
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    let { cx, cy, rw, rh } = startRect;
+
+    if (dragType === 'move') {
+      cx = Math.max(0, Math.min(cw - rw, cx + dx));
+      cy = Math.max(0, Math.min(ch - rh, cy + dy));
+    } else {
+      if (dragType.includes('w')) { cx += dx; rw -= dx; }
+      if (dragType.includes('e')) { rw += dx; }
+      if (dragType.includes('n')) { cy += dy; rh -= dy; }
+      if (dragType.includes('s')) { rh += dy; }
+      rw = Math.max(40, rw);
+      rh = Math.max(40, rh);
+      cx = Math.max(0, cx);
+      cy = Math.max(0, cy);
+      if (cx + rw > cw) rw = cw - cx;
+      if (cy + rh > ch) rh = ch - cy;
+    }
+
+    cropState.cx = cx; cropState.cy = cy;
+    cropState.rw = rw; cropState.rh = rh;
+    rect.style.left = cx + 'px'; rect.style.top = cy + 'px';
+    rect.style.width = rw + 'px'; rect.style.height = rh + 'px';
+    updateCropDarks(cx, cy, rw, rh, cw, ch);
+  }
+
+  function onPointerUp() {
+    document.removeEventListener('pointermove', onPointerMove);
+    document.removeEventListener('pointerup', onPointerUp);
+    dragType = null;
+  }
+
+  overlay.addEventListener('pointerdown', onPointerDown);
+
+  // 적용/취소 버튼 핸들러 (1회용)
+  const applyBtn = document.getElementById('crop-apply-btn');
+  const cancelBtn = document.getElementById('crop-cancel-btn');
+
+  function applyCrop() {
+    const { imgObj, cx, cy, rw, rh } = cropState;
+    // 크롭 적용
+    const cropRect = new fabric.Rect({
+      left: cx, top: cy, width: rw, height: rh,
+      absolutePositioned: true,
+    });
+    imgObj.clipPath = cropRect;
+    canvas.renderAll();
+    saveState();
+    endCrop();
+  }
+
+  function endCrop() {
+    overlay.style.display = 'none';
+    outer.classList.remove('crop-active');
+    overlay.removeEventListener('pointerdown', onPointerDown);
+    applyBtn.removeEventListener('click', applyCrop);
+    cancelBtn.removeEventListener('click', endCrop);
+    cropState = null;
+  }
+
+  applyBtn.addEventListener('click', applyCrop);
+  cancelBtn.addEventListener('click', endCrop);
+}
+
+function updateCropDarks(cx, cy, rw, rh, cw, ch) {
+  document.getElementById('crop-dark-top').style.height = cy + 'px';
+  document.getElementById('crop-dark-bot').style.height = (ch - cy - rh) + 'px';
+  document.getElementById('crop-dark-bot').style.top = (cy + rh) + 'px';
+  document.getElementById('crop-dark-left').style.top = cy + 'px';
+  document.getElementById('crop-dark-left').style.width = cx + 'px';
+  document.getElementById('crop-dark-left').style.height = rh + 'px';
+  document.getElementById('crop-dark-right').style.top = cy + 'px';
+  document.getElementById('crop-dark-right').style.width = (cw - cx - rw) + 'px';
+  document.getElementById('crop-dark-right').style.height = rh + 'px';
+  document.getElementById('crop-dark-right').style.left = (cx + rw) + 'px';
+}
+
+// ═══════════════════════════════════════════════════════════════
+// AI 기능
+// ═══════════════════════════════════════════════════════════════
+const AI_STYLES = [
+  { id: 'webtoon', name: '웹툰', emoji: '🎨' },
+  { id: 'pencil', name: '연필스케치', emoji: '✏️' },
+  { id: 'watercolor', name: '수채화', emoji: '🖌️' },
+  { id: 'popart', name: '팝아트', emoji: '🎭' },
+  { id: 'drawing', name: '드로잉', emoji: '🖊️' },
+  { id: 'animation', name: '애니메이션', emoji: '🌸' },
+];
+
+let selectedAIStyle = null;
+
+const aiGrid = document.getElementById('ai-style-grid');
+AI_STYLES.forEach(style => {
+  const card = document.createElement('div');
+  card.className = 'ai-style-card';
+  card.dataset.style = style.id;
+  card.innerHTML = `<div class="ai-style-emoji">${style.emoji}</div><div class="ai-style-name">${style.name}</div>`;
+  card.addEventListener('click', () => {
+    selectedAIStyle = style.id;
+    aiGrid.querySelectorAll('.ai-style-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    document.getElementById('btn-ai-transform').disabled = !canvas || !canvas.getActiveObject();
+  });
+  aiGrid.appendChild(card);
+});
+
+// AI 스타일 변환
+document.getElementById('btn-ai-transform').addEventListener('click', async () => {
+  if (!canvas || !selectedAIStyle) return;
+  const obj = canvas.getActiveObject();
+  if (!obj || obj.type !== 'image') {
+    showAlert('이미지를 선택해 주세요.');
+    return;
+  }
+
+  const urlIsPlaceholder = !GAS_URL || GAS_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE' || !GAS_URL.startsWith('https://script.google.com/macros/s/');
+  if (urlIsPlaceholder) {
+    showAlert('Google Apps Script URL이 아직 설정되지 않았습니다.\n\nGAS 배포 후 GAS_URL을 업데이트해 주세요.');
+    return;
+  }
+
+  showLoading('AI 스타일 변환 중...');
+  try {
+    const dataUrl = obj.toDataURL({ format: 'jpeg', quality: 0.92 });
+    const base64 = dataUrl.split(',')[1];
+
+    const res = await fetch(GAS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({
+        action: 'gemini_transform',
+        imageData: base64,
+        style: selectedAIStyle,
+        _token: _GT,
+      }),
+    });
+    const result = await res.json();
+    if (result.success && result.imageData) {
+      fabric.Image.fromURL('data:image/png;base64,' + result.imageData, newImg => {
+        const scale = Math.min(
+          (canvas.width * 0.9) / newImg.width,
+          (canvas.height * 0.9) / newImg.height, 1
+        );
+        newImg.set({ scaleX: scale, scaleY: scale, left: canvas.width/2, top: canvas.height/2, originX:'center', originY:'center' });
+        canvas.add(newImg);
+        canvas.setActiveObject(newImg);
+        canvas.renderAll();
+      });
+    } else {
+      showAlert('AI 변환에 실패했습니다: ' + (result.error || '알 수 없는 오류'));
+    }
+  } catch (err) {
+    showAlert('AI 변환 중 오류가 발생했습니다.\n' + err.message);
+  }
+  hideLoading();
+});
+
+// 배경 제거
+document.getElementById('btn-remove-bg').addEventListener('click', async () => {
+  if (!canvas) return;
+  const obj = canvas.getActiveObject();
+  if (!obj || obj.type !== 'image') {
+    showAlert('이미지를 선택해 주세요.');
+    return;
+  }
+
+  const urlIsPlaceholder = !GAS_URL || GAS_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE' || !GAS_URL.startsWith('https://script.google.com/macros/s/');
+  if (urlIsPlaceholder) {
+    showAlert('Google Apps Script URL이 아직 설정되지 않았습니다.');
+    return;
+  }
+
+  showLoading('배경 제거 중...');
+  try {
+    const dataUrl = obj.toDataURL({ format: 'png' });
+    const base64 = dataUrl.split(',')[1];
+
+    const res = await fetch(GAS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify({ action: 'remove_bg', imageData: base64, _token: _GT }),
+    });
+    const result = await res.json();
+    if (result.success && result.imageData) {
+      fabric.Image.fromURL('data:image/png;base64,' + result.imageData, newImg => {
+        newImg.set({ left: obj.left, top: obj.top, scaleX: obj.scaleX, scaleY: obj.scaleY, originX: obj.originX, originY: obj.originY });
+        canvas.remove(obj);
+        canvas.add(newImg);
+        canvas.setActiveObject(newImg);
+        canvas.renderAll();
+      });
+    } else {
+      showAlert('배경 제거에 실패했습니다: ' + (result.error || '알 수 없는 오류'));
+    }
+  } catch (err) {
+    showAlert('배경 제거 중 오류가 발생했습니다.\n' + err.message);
+  }
+  hideLoading();
+});
+
+// ═══════════════════════════════════════════════════════════════
+// 주문 시스템
+// ═══════════════════════════════════════════════════════════════
+document.getElementById('btn-order').addEventListener('click', () => {
+  if (!canvas || canvas.getObjects().length === 0) {
+    showAlert('이미지 또는 텍스트를 추가해 주세요.');
+    return;
+  }
+  document.getElementById('order-modal').classList.add('visible');
+});
+
+document.getElementById('order-cancel').addEventListener('click', () => {
+  document.getElementById('order-modal').classList.remove('visible');
+});
+
+document.getElementById('order-submit').addEventListener('click', async () => {
+  if (isSubmitting) return; // 이중 제출 방지
+
+  const name = document.getElementById('order-name').value.trim();
+  const phone = document.getElementById('order-phone').value.trim();
+  const email = document.getElementById('order-email').value.trim();
+
+  if (!name) { showAlert('이름을 입력해 주세요.'); return; }
+  if (!phone) { showAlert('연락처를 입력해 주세요.'); return; }
+  if (!email) { showAlert('이메일을 입력해 주세요.'); return; }
+  if (!email.includes('@') || !email.includes('.')) { showAlert('올바른 이메일 형식을 입력해 주세요.'); return; }
+
+  const urlIsPlaceholder = !GAS_URL || GAS_URL === 'YOUR_GOOGLE_APPS_SCRIPT_URL_HERE' || !GAS_URL.startsWith('https://script.google.com/macros/s/');
+  if (urlIsPlaceholder) {
+    showAlert('Google Apps Script URL이 아직 설정되지 않았습니다.\n\nGAS 배포 후 GAS_URL을 업데이트해 주세요.');
+    return;
+  }
+
+  isSubmitting = true;
+  document.getElementById('order-modal').classList.remove('visible');
+  showLoading('주문 접수 중...');
+
+  try {
+    // 캔버스 스냅샷
+    canvas.discardActiveObject();
+    canvas.renderAll();
+
+    // 클리핑 해제하고 스냅샷
+    const tempClip = canvas.clipPath;
+    canvas.clipPath = null;
+    const snapshot = canvas.toDataURL({ format: 'jpeg', quality: 0.92 });
+    canvas.clipPath = tempClip;
+
+    const base64 = snapshot.split(',')[1];
+    const sz = currentProduct.sizes[currentSizeIdx];
+    const priceData = currentProduct.prices[currentMaterial] || currentProduct.prices._default || {};
+    const price = priceData[sz.label];
+
+    const payload = {
+      action: 'order',
+      name: name,
+      phone: phone,
+      email: email,
+      product: currentProduct.name,
+      material: currentMaterial !== '_default' ? (MATERIALS[currentMaterial]?.name || '') : '',
+      size: sz.label + ' (' + sz.dim + ')',
+      price: price ? price.sale : 0,
+      imageData: base64,
+      _token: _GT,
+    };
+
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 120000);
+
+    const res = await fetch(GAS_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+    });
+    clearTimeout(timeout);
+
+    const result = await res.json();
+    if (result.success) {
+      hideLoading();
+      showAlert('주문이 접수되었습니다!\n\n확인 이메일을 발송했습니다.\n감사합니다.');
+      document.getElementById('order-name').value = '';
+      document.getElementById('order-phone').value = '';
+      document.getElementById('order-email').value = '';
+    } else {
+      hideLoading();
+      showAlert('주문 접수에 실패했습니다.\n' + (result.error || ''));
+    }
+  } catch (err) {
+    hideLoading();
+    if (err.name === 'AbortError') {
+      showAlert('요청 시간이 초과되었습니다.\n잠시 후 다시 시도해 주세요.');
+    } else {
+      showAlert('주문 중 오류가 발생했습니다.\n' + err.message);
+    }
+  } finally {
+    isSubmitting = false;
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════
+// 윈도우 리사이즈 대응
+// ═══════════════════════════════════════════════════════════════
+let resizeTimer;
+window.addEventListener('resize', () => {
+  if (resizeTimer) clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    if (canvas && currentProduct) {
+      // 크롭 중이면 크롭 취소
+      if (cropState) {
+        const overlay = document.getElementById('crop-overlay');
+        if (overlay) overlay.style.display = 'none';
+        const outer = document.getElementById('canvas-outer');
+        if (outer) outer.classList.remove('crop-active');
+        cropState = null;
+      }
+      resizeCanvas();
+    }
+  }, 200);
+});
+</script>
+</body>
+</html>
