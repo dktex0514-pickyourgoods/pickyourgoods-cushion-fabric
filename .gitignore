@@ -1,0 +1,9 @@
+# Local Netlify folder
+.netlify/
+
+# Claude Code local settings (contains tokens, do not commit)
+.claude/
+
+node_modules/
+.DS_Store
+Thumbs.db
