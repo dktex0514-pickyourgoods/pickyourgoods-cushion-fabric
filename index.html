@@ -1324,6 +1324,31 @@
 <!-- 스포이드 프리뷰 -->
 <div id="eyedropper-preview"></div>
 
+
+<!-- ════════════ AI 프롬프트 툴바 팝업 ════════════ -->
+<div id="ai-prompt-popup" role="dialog" aria-hidden="true">
+  <div class="app-arrow-up"></div>
+  <div class="app-img-wrap">
+    <img id="app-img" src="ai-style-illust.png" alt="스타일 예시">
+    <div class="app-badge">✦ 예시 이미지</div>
+  </div>
+  <div class="app-tabs">
+    <div class="app-tab active" data-style="base">기본</div>
+    <div class="app-tab" data-style="illust">일러스트</div>
+    <div class="app-tab" data-style="pencil">연필 드로잉</div>
+    <div class="app-tab" data-style="portrait">초상화</div>
+    <div class="app-tab" data-style="character">캐릭터화</div>
+  </div>
+  <div class="app-title" id="app-title">원본 사진</div>
+  <div class="app-desc" id="app-desc">AI로 변환하기 전 원본 사진이에요<br>원하는 스타일을 선택해보세요!</div>
+  <button class="app-cta-btn" id="app-cta-btn">
+    원하는 스타일 선택하기 →
+  </button>
+  <div class="app-hint">ChatGPT / Gemini에 내 사진과 함께 붙여넣기 하세요 ✨</div>
+</div>
+
+</body>
+
 <script>
 // ═══════════════════════════════════════════════════════════════
 // 설정
@@ -2922,29 +2947,4 @@ window.addEventListener('resize', () => {
 })();
 
 </script>
-
-
-<!-- ════════════ AI 프롬프트 툴바 팝업 ════════════ -->
-<div id="ai-prompt-popup" role="dialog" aria-hidden="true">
-  <div class="app-arrow-up"></div>
-  <div class="app-img-wrap">
-    <img id="app-img" src="ai-style-illust.png" alt="스타일 예시">
-    <div class="app-badge">✦ 예시 이미지</div>
-  </div>
-  <div class="app-tabs">
-    <div class="app-tab active" data-style="base">기본</div>
-    <div class="app-tab" data-style="illust">일러스트</div>
-    <div class="app-tab" data-style="pencil">연필 드로잉</div>
-    <div class="app-tab" data-style="portrait">초상화</div>
-    <div class="app-tab" data-style="character">캐릭터화</div>
-  </div>
-  <div class="app-title" id="app-title">원본 사진</div>
-  <div class="app-desc" id="app-desc">AI로 변환하기 전 원본 사진이에요<br>원하는 스타일을 선택해보세요!</div>
-  <button class="app-cta-btn" id="app-cta-btn">
-    원하는 스타일 선택하기 →
-  </button>
-  <div class="app-hint">ChatGPT / Gemini에 내 사진과 함께 붙여넣기 하세요 ✨</div>
-</div>
-
-</body>
 </html>
