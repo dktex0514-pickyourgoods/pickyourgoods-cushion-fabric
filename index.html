@@ -2714,7 +2714,7 @@ window.addEventListener('resize', () => {
 //  ✨ AI 프롬프트 툴바 팝업
 // ════════════════════════════════════════════════════
 (function initAiPromptPopup() {
-  const APP_STYLES = {
+    const APP_STYLES = {
     base: {
       src:   'ai-style-base.png',
       title: '원본 사진',
@@ -2725,25 +2725,49 @@ window.addEventListener('resize', () => {
       src:   'ai-style-illust.png',
       title: '일러스트 스타일',
       desc:  '선명한 색감과 깔끔한 선으로\n일러스트 캐릭터처럼 변환해드려요',
-      prompt: '이 사진 속 인물(또는 동물)을 일러스트 스타일로 변환해줘. 선명한 색감, 깔끔한 선 처리, 고화질로 캔버스 인쇄에 적합하게 만들어줘. 원본 인물/동물의 외모와 특징은 그대로 유지해줘.'
+      prompt: `Use the uploaded photo as the main reference. Transform the person in the photo into a bright, clean anime-style portrait illustration with a lively Korean/Japanese webtoon feel. Preserve the person's facial identity, face shape, hairstyle, skin tone, and overall impression, and redraw them as a polished 2D character with smooth pale skin, bold clean outlines, soft cel shading, rosy blush, and a fresh youthful appearance.
+
+Very important: keep the original facial expression exactly as in the reference photo. Do not change the expression, mood, mouth shape, eye shape, or emotional tone. Preserve the same calm, soft, natural expression from the uploaded image. Do not turn the expression into a big smile, laughing face, exaggerated joy, or any different emotion.
+
+Very important: keep the original clothing exactly as in the reference photo. Do not change, redesign, replace, simplify, or restyle the outfit. Preserve the same clothing type, silhouette, neckline, sleeve length, material feel, and color tone from the uploaded image. Do not convert the clothing into a sleeveless top, camisole, off-shoulder dress, or any different outfit.
+
+Keep the hairstyle clearly based on the original photo, with the same overall look and loose strands framing the face. You may slightly clean or stylize the hair for the anime/webtoon rendering, but do not significantly change the hairstyle.
+
+Very important: keep the pose, upper body angle, shoulder position, hand position, and overall body orientation exactly as shown in the original photo. Do not tilt, turn, invent, or recompose the pose. Preserve the same body angle and framing as the reference photo.
+
+Very important: the background must be pure solid white only. Use a clean plain white background with no scenery, no shadows in the background, no gradients, no patterns, no objects, no decorations, and no colored backdrop. The background must remain simple, empty, bright, and fully white.
+
+Keep the rendering neat, stylish, and high-quality, with expressive linework, soft highlights, and a polished webtoon illustration finish. The final image should feel cute, clean, lively, aesthetically pleasing, and stylish, like a polished character/profile illustration.
+
+Avoid photorealism, 3D rendering, changing the facial expression, changing the outfit, changing the pose, heavy shadows, harsh contrast, messy anatomy, extra fingers, bad hands, overly detailed background, dark colors, text, watermark, and logo.
+
+Priority instruction: original facial identity, original expression, original outfit, original pose, and a pure white background are more important than stylization.`
     },
     pencil: {
       src:   'ai-style-pencil.png',
       title: '연필 드로잉',
       desc:  '섬세한 연필 선으로 담아낸\n흑백 스케치 감성의 드로잉',
-      prompt: '이 사진 속 인물(또는 동물)을 연필 드로잉 스타일로 변환해줘. 섬세한 연필 선, 흑백 스케치 느낌, 고화질로 캔버스 인쇄에 적합하게 만들어줘. 원본 인물/동물의 외모와 특징은 그대로 유지해줘.'
+      prompt: `Use the uploaded photo as the main reference. Transform the person in the photo into a clean, refined, elegant pencil portrait illustration. Preserve the person's facial identity, face shape, hairstyle, eyes, expression, and overall atmosphere, while rendering the image in a sophisticated black-and-white graphite drawing style. Focus on delicate pencil linework, realistic facial structure, smooth tonal shading, detailed eyes, carefully drawn hair strands, natural lips, and elegant hand-drawn texture. The face should be the most detailed part, with the body, clothing, and accessories drawn more simply but neatly. Use a white or very light paper-like background with subtle graphite grain. The final image should feel classy, emotional, polished, and suitable as a personal portrait, couple gift, family keepsake, celebrity-style portrait, or premium profile illustration. Keep the drawing clean and balanced, with a modern and refined sketch aesthetic. Avoid color, cartoon style, anime exaggeration, 3D rendering, photorealistic photo texture, rough messy scribbles, distorted facial proportions, extra fingers, harsh contrast, text, watermark, and logo.`
     },
     portrait: {
       src:   'ai-style-portrait.png',
       title: '초상화 스타일',
       desc:  '클래식한 유화 초상화 느낌으로\n품격 있는 작품으로 변환해드려요',
-      prompt: '이 사진 속 인물(또는 동물)을 클래식 유화 초상화 스타일로 변환해줘. 풍부한 색감, 붓터치 질감, 고화질로 캔버스 인쇄에 적합하게 만들어줘. 원본 인물/동물의 외모와 특징은 그대로 유지해줘.'
+      prompt: `Use the uploaded photo as the main reference. Transform the person, couple, family, or pet in the photo into a cute, warm, fully colored portrait illustration with an adorable Korean personal illustration style. Preserve the person's identity, hairstyle, clothing, pose, facial expression, and the overall memory or relationship in the photo, but simplify the features into a charming hand-drawn character look. Use clean black line art, soft flat coloring, gentle shadows, warm pastel tones, and slightly simplified facial features. Keep the mood friendly, sentimental, cozy, and gift-like, as if the illustration was made for a profile picture, couple gift, family keepsake, wedding memory, or special anniversary. If there are multiple people, keep their relative height, pose, and interaction natural. If there is a pet, make it cute and expressive while preserving its recognizable shape and markings. Use a simple pastel background or a lightly suggested background based on the original photo, not too detailed. The final image should feel cute, clean, heartwarming, personal, and polished, like a custom illustrated memory portrait. Avoid photorealism, 3D rendering, overly realistic skin, harsh shadows, messy lines, distorted anatomy, extra fingers, bad hands, overly complex background, text, watermark, and logo.`
     },
     character: {
       src:   'ai-style-character.png',
       title: '캐릭터화 스타일',
       desc:  '귀엽고 개성 있는 캐릭터로\n특별한 굿즈를 만들어보세요',
-      prompt: '이 사진 속 인물(또는 동물)을 귀여운 캐릭터 스타일로 변환해줘. 개성 있는 캐릭터, 선명한 색상, 고화질로 캔버스 인쇄에 적합하게 만들어줘. 원본 인물/동물의 외모와 특징은 그대로 유지해줘.'
+      prompt: `Use the uploaded photo as the main reference. Transform the person, pet, mascot, or character in the photo into a cute and funny Korean messenger emoticon sticker character.
+
+Preserve the key identity, hairstyle, outfit color, facial vibe, and recognizable features from the original photo. Keep the pose, facial expression, hand position, and overall body angle as close to the original photo as possible. Do not change the expression into a wink, open-mouth laugh, surprise face, or exaggerated reaction unless the original photo already shows that emotion. Do not invent new hand gestures such as waving, finger hearts, thumbs-up, or peace signs.
+
+Simplify the person into a bold, playful sticker-style cartoon with a cute chibi-like proportion: slightly enlarged head, simplified upper body, clean silhouette, and charming facial features. Use thick clean outlines, simple flat colors, big expressive but natural-looking eyes, soft blush, and a gentle friendly smile. Keep the body centered in a square 1:1 composition with the same upper-body portrait feeling as the original photo.
+
+Make it look suitable for KakaoTalk, LINE, Naver, company messenger, or personal emoticon use. The final result should feel cute, funny, commercial, simple, and usable as a sticker/emoticon, while still matching the original photo's calm and friendly mood. Use a clean white or transparent-looking background.
+
+Do not add text unless the user specifically provides the exact phrase. Avoid photorealism, realistic skin texture, complex background, thin delicate lines, overly detailed clothing, awkward hands, distorted anatomy, unreadable expression, random text, watermark, and logo.`
     }
   };
 
